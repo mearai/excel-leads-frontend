@@ -6,9 +6,9 @@ import React, { useState } from "react";
 import Header from "./components/header/Header";
 import Sidebar from "./components/sidebar/Sidebar";
 
-
-
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { useAuth } from "@/hooks/auth";
+import Loading from "../loading";
 
 const MainWrapper = styled("div")(() => ({
   display: "flex",
@@ -31,13 +31,17 @@ export default function RootLayout({ children }) {
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const customizer = useSelector((state) => state.customizer);
   const theme = useTheme();
+  const { user } = useAuth({ middleware: "auth" });
 
+  if (!user) {
+    return <Loading />;
+  }
   return (
     <MainWrapper>
       {/* ------------------------------------------- */}
       {/* Sidebar */}
       {/* ------------------------------------------- */}
-      
+
       {/* ------------------------------------------- */}
       {/* Main Wrapper */}
       {/* ------------------------------------------- */}
@@ -54,9 +58,9 @@ export default function RootLayout({ children }) {
         {/* ------------------------------------------- */}
         {/* Header */}
         {/* ------------------------------------------- */}
-         <Header />
+        <Header />
         {/* PageContent */}
-       
+
         <Container
           sx={{
             maxWidth: customizer.isLayout === "boxed" ? "lg" : "100%!important",
@@ -76,7 +80,6 @@ export default function RootLayout({ children }) {
           {/* End Page */}
           {/* ------------------------------------------- */}
         </Container>
-        
       </PageWrapper>
     </MainWrapper>
   );

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import Link from "next/link";
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
@@ -12,46 +12,22 @@ const Logo = () => {
     display: "block",
   }));
 
-  if (customizer.activeDir === "ltr") {
-    return (
-      <LinkStyled href="/">
-        {customizer.activeMode === "dark" ? (
-          <Image
-            src="/images/logos/light-logo.svg"
-            alt="logo"
-            height={customizer.TopbarHeight}
-            width={174}
-            priority
-          />
-        ) : (
-          <Image
-            src={"/images/logos/dark-logo.svg"}
-            alt="logo"
-            height={customizer.TopbarHeight}
-            width={174}
-            priority
-          />
-        )}
-      </LinkStyled>
-    );
-  }
-
   return (
     <LinkStyled href="/">
       {customizer.activeMode === "dark" ? (
         <Image
-          src="/images/logos/dark-rtl-logo.svg"
+          src="/images/logos/flow-logo.svg"
           alt="logo"
           height={customizer.TopbarHeight}
-          width={174}
+          width={customizer.isCollapse ? "40" : "180"}
           priority
         />
       ) : (
         <Image
-          src="/images/logos/light-logo-rtl.svg"
+          src={"/images/logos/flow-logo-dark.svg"}
           alt="logo"
           height={customizer.TopbarHeight}
-          width={174}
+          width={customizer.isCollapse ? "40" : "180"}
           priority
         />
       )}
