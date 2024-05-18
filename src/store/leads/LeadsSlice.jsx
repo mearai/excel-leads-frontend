@@ -5,8 +5,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   leads: [],
-  links: {},
-  meta: {},
+  //   links: {},
+  //   meta: {},
 };
 
 const LeadsSlice = createSlice({
@@ -14,9 +14,9 @@ const LeadsSlice = createSlice({
   initialState,
   reducers: {
     getLeads(state, action) {
-      state.leads = action.payload.data;
-      state.links = action.payload.links;
-      state.meta = action.payload.meta;
+      state.leads = action.payload;
+      //   state.links = action.payload.links;
+      //   state.meta = action.payload.meta;
     },
     updateLeads(state) {
       state.error = null;
@@ -28,12 +28,13 @@ export const { getLeads, updateLeads } = LeadsSlice.actions;
 export const fetchLeads = () => async (dispatch) => {
   try {
     const response = await axios.get("/api/v1/leads");
+
     if (response.data.success) {
-      dispatch(getLeads(response.data));
+      dispatch(getLeads(response.data.data));
     }
   } catch (error) {
     console.log("error in file leadslice");
-    console.log(error.response);
+    console.log(error);
   }
 };
 export default LeadsSlice.reducer;

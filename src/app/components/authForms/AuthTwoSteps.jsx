@@ -35,8 +35,8 @@ const AuthTwoSteps = () => {
   const [errors, setErrors] = useState([]);
   const [message, setMessage] = useState();
   const [status, setStatus] = useState(null);
-  const { user } = useAuth({ middleware: "auth" });
-  const { verifyCode, resendVerification } = useAuth({
+
+  const { verifyCode, resendVerification, user } = useAuth({
     middleware: "guest",
     redirectIfAuthenticated: "/dashboard",
   });

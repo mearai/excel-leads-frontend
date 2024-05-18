@@ -37,7 +37,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
           throw error;
         }
 
-        router.push("/verify-email");
+        // router.push("/verify-email");
       })
   );
 

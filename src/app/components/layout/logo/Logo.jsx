@@ -16,7 +16,7 @@ const Logo = () => {
     <LinkStyled href="/">
       {customizer.activeMode === "dark" ? (
         <Image
-          src="/images/logos/flow-logo.svg"
+          src="/images/logos/flow-logo-dark.svg"
           alt="logo"
           height={customizer.TopbarHeight}
           width={customizer.isCollapse ? "40" : "180"}
@@ -24,7 +24,7 @@ const Logo = () => {
         />
       ) : (
         <Image
-          src={"/images/logos/flow-logo-dark.svg"}
+          src={"/images/logos/flow-logo-light.svg"}
           alt="logo"
           height={customizer.TopbarHeight}
           width={customizer.isCollapse ? "40" : "180"}
