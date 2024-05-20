@@ -1,4 +1,4 @@
-'se client'
+'use client'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Box from '@mui/material/Box';
@@ -20,6 +20,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   const dispatch = useDispatch();
   const [errors, setErrors] = useState([])
     const [status, setStatus] = useState(null)
+    const [loading, setLoading] = useState(false)
     const { login } = useAuth({
         middleware: 'guest',
         redirectIfAuthenticated: '/dashboard',
@@ -44,6 +45,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
                     email: values.email, // Changed to email
                     password: values.password,
                     rememberMe: values.rememberMe, // Remember Me value
+                    setLoading,
                     setErrors,
                     setStatus
                 });
@@ -95,16 +97,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
                     />
                 </Box>
                 <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
-                    <FormGroup>
-                        <FormControlLabel
-                            control={<CustomCheckbox
-                                checked={formik.values.rememberMe}
-                                onChange={formik.handleChange}
-                                name="rememberMe"
-                            />}
-                            label="Remember Me"
-                        />
-                    </FormGroup>
+                   
                     <Typography
                         component={Link}
                         href="/auth/auth1/forgot-password"
@@ -125,7 +118,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
                     size="large"
                     fullWidth
                     type="submit"
-                    disabled={formik.isSubmitting}
+                    disabled={loading}
                 >
                     Sign In
                 </Button>

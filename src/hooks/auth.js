@@ -78,19 +78,20 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
 
     setErrors([]);
     setStatus(null);
-
+    setLoading(true);
     axios
       .post("/login", props)
       .then((response) => {
         console.log("login response");
         console.log(response);
         if (response.data.success == true) {
+           mutate()
           router.push("/verify-code");
         }
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;
-
+        setLoading(false);
         setErrors(error.response.data);
       });
   };

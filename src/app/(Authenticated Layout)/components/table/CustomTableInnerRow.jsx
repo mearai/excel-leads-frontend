@@ -1,47 +1,42 @@
 "use client";
-import {
-  Box,
-  Button,
-  Collapse,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import React, { useRef, useEffect } from "react";
+import { Box, Button, Collapse, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import ClipboardJS from "clipboard";
-import { useEffect, useRef } from "react";
+
 const formatKey = (key) => {
   return key
     .replace(/[_-]/g, " ") // Replace underscores and dashes with spaces
     .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
 };
-export default function CustomTableInnerRow({ details, open, id }) {
-  if (details.length <= 0) {
-    return;
-  }
+
+const CustomTableInnerRow = ({ details, open, id }) => {
   const tableRef = useRef(null);
-  const copyButtonRef = useRef(null);
-  console.log(tableRef.current);
+  const buttonRef = useRef(null);
+
   useEffect(() => {
-    console.log(tableRef);
-    // const clipboard = new ClipboardJS(copyButtonRef.current, {
-    //   // target: () => tableRef.current,
-    // });
+    if (!open) return;
 
-    // clipboard.on("success", () => {
-    //   alert("Inner row data copied to clipboard!");
-    // });
+    const clipboard = new ClipboardJS(buttonRef.current, {
+      target: () => tableRef.current,
+    });
 
-    // clipboard.on("error", (e) => {
-    //   console.error("Error copying to clipboard: ", e);
-    // });
+    clipboard.on("success", () => {
+      alert("Inner row data copied to clipboard!");
+    });
 
-    // return () => {
-    //   clipboard.destroy();
-    // };
-  }, []);
+    clipboard.on("error", (e) => {
+      console.error("Error copying to clipboard: ", e);
+    });
+
+    return () => {
+      clipboard.destroy();
+    };
+  }, [open]);
+
+  if (!details || details.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <TableRow>
@@ -54,27 +49,15 @@ export default function CustomTableInnerRow({ details, open, id }) {
                 sx={{
                   mt: 2,
                   backgroundColor: (theme) =>
-                    `${
-                      theme.palette.mode === "dark"
-                        ? theme.palette.bg.dark
-                        : theme.palette.bg.light
-                    }`,
+                    `${theme.palette.mode === "dark" ? theme.palette.bg.dark : theme.palette.bg.light}`,
                   p: "5px 15px",
                   color: (theme) =>
-                    `${
-                      theme.palette.mode === "dark"
-                        ? theme.palette.text.light
-                        : "rgba(0, 0, 0, 0.87)"
-                    }`,
+                    `${theme.palette.mode === "dark" ? theme.palette.text.light : "rgba(0, 0, 0, 0.87)"}`,
                 }}
                 textAlign={"center"}
               >
                 <Stack>
-                  <Typography
-                    variant="h3"
-                    marginTop={"10px"}
-                    marginBottom={"10px"}
-                  >
+                  <Typography variant="h3" marginTop={"10px"} marginBottom={"10px"}>
                     Lead No. {id}
                   </Typography>
                 </Stack>
@@ -89,11 +72,11 @@ export default function CustomTableInnerRow({ details, open, id }) {
                     }}
                     direction="row"
                     spacing={2}
-                    alignItems="center"
+                    
                     variant="contained"
                     color="success"
-                    ref={copyButtonRef}
-                    data-clipboard-target={`#table-${details.id}`}
+                    ref={buttonRef}
+                    data-clipboard-target={`#table-${id}`}
                   >
                     Copy Details
                   </Button>
@@ -102,7 +85,7 @@ export default function CustomTableInnerRow({ details, open, id }) {
               <Table
                 size="small"
                 aria-label="details"
-                id={`table-${details.id}`}
+                id={`table-${id}`}
                 ref={tableRef}
               >
                 <TableBody>
@@ -132,4 +115,6 @@ export default function CustomTableInnerRow({ details, open, id }) {
       </TableRow>
     </>
   );
-}
+};
+
+export default CustomTableInnerRow;
