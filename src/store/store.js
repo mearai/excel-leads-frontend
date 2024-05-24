@@ -6,6 +6,7 @@ import CustomizerReducer from "./customizer/CustomizerSlice";
 import MessageReducer from "./message/MessageSlice";
 import NotificationReducer from "./notification/NotificationSlice";
 import LeadsReducer from "./leads/LeadsSlice";
+import authReducer from "./auth/AuthSlice";
 // import EcommerceReducer from "./apps/eCommerce/ECommerceSlice";
 // import ChatsReducer from "./apps/chat/ChatSlice";
 // import NotesReducer from "./apps/notes/NotesSlice";
@@ -22,6 +23,7 @@ export const store = configureStore({
     message: MessageReducer,
     notifications: NotificationReducer,
     leads: LeadsReducer,
+    auth: authReducer,
     // ecommerceReducer: EcommerceReducer,
     // chatReducer: ChatsReducer,
     // emailReducer: EmailReducer,

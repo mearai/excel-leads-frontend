@@ -2,10 +2,14 @@ import useSWR from "swr";
 import axios from "@/lib/axios";
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentUser } from "@/store/auth/AuthSlice";
 
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   const router = useRouter();
   const params = useParams();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   const {
     data: user,
@@ -85,7 +89,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         console.log("login response");
         console.log(response);
         if (response.data.success == true) {
-           mutate()
+          mutate();
           router.push("/verify-code");
         }
       })
@@ -214,6 +218,12 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
     if (middleware === "auth" && error) {
       logout();
+    }
+    if (user && !currentUser) {
+      dispatch(setCurrentUser(user));
+      console.log("curasdrentUser");
+      console.log(user);
+      console.log(currentUser);
     }
   }, [user, error]);
 

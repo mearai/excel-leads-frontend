@@ -81,7 +81,7 @@ const baseDarkTheme = {
       dark: "#173f98",
     },
     success: {
-      main: "#13DEB9",
+      main: "#018f75",
       light: "#1B3C48",
       dark: "#02b3a9",
       contrastText: "#ffffff",

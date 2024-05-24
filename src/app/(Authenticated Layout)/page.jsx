@@ -1,7 +1,7 @@
 "use client";
 
 import PageContainer from "@/app/components/container/PageContainer";
-import CollapsibleTable from "../components/table/CollapsibleTable";
+import CollapsibleTable from "./components/table/CollapsibleTable";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addLeads,
@@ -9,9 +9,9 @@ import {
   fetchLeadsStats,
 } from "@/store/leads/LeadsSlice";
 import { useEffect, useState } from "react";
-import Leads from "../components/widgets/charts/Leads";
+import Leads from "./components/widgets/charts/Leads";
 import axios from "@/lib/axios";
-import YearlySales from "../components/widgets/charts/Yearly";
+import YearlySales from "./components/widgets/charts/Yearly";
 import Pusher from "pusher-js";
 import { setGlobalSuccess } from "@/store/message/MessageSlice";
 function page() {
