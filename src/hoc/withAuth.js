@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { selectCurrentUser } from "@/store/auth/AuthSlice"; // Adjust the path according to your auth slice
+import Loading from "@/app/loading";
 
 export default function withAuth(WrappedComponent) {
   return function WithAuth(props) {
@@ -18,7 +19,7 @@ export default function withAuth(WrappedComponent) {
 
     if (!user) {
       // You can return a loading spinner or null while the user is being redirected
-      return <div>Loading...</div>;
+      return <Loading />;
     }
 
     return <WrappedComponent {...props} />;

@@ -62,7 +62,7 @@ function page() {
     audio.play();
   };
   return (
-    <PageContainer title="Dashboard">
+    <PageContainer title="Dashboard" description="Flow digital">
       <CollapsibleTable leads={leads.leads}></CollapsibleTable>
       {/* <Leads leadscount={leadsCount}/>
       <YearlySales/> */}
