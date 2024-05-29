@@ -2,10 +2,14 @@ import useSWR from "swr";
 import axios from "@/lib/axios";
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { setCurrentUser } from "@/store/auth/AuthSlice";
 
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   const router = useRouter();
   const params = useParams();
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
 
   const {
     data: user,
@@ -82,10 +86,8 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     axios
       .post("/login", props)
       .then((response) => {
-        console.log("login response");
-        console.log(response);
         if (response.data.success == true) {
-           mutate()
+          mutate();
           router.push("/verify-code");
         }
       })
@@ -96,27 +98,32 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       });
   };
   const verifyCode = async ({ setErrors, setStatus, setLoading, ...props }) => {
-    try {
-      setLoading(true); // Set loading to true when the request starts
-      await csrf();
+    setLoading(true); // Set loading to true when the request starts
+    await csrf();
 
-      setErrors([]);
-      setStatus(null);
+    setErrors([]);
+    setStatus(null);
 
-      await axios.post("/api/v1/2fa", props);
-
-      // If verification is successful, you can perform additional actions here if needed
-    } catch (error) {
-      if (error.response && error.response.status === 422) {
-        setErrors(error.response.data);
-        if (error.response.data.message === "Verification code expired") {
+    await axios
+      .post("/api/v1/verify", props)
+      .then((response) => {
+        console.log("login response");
+        console.log(response);
+        if (response.data.success == true) {
+          mutate();
+          router.push("/verify-code");
         }
-      } else {
-        throw error;
-      }
-    } finally {
-      setLoading(false); // Set loading back to false when the request completes
-    }
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          setErrors(error.response.data);
+          if (error.response.data.message === "Verification code expired") {
+          }
+        } else {
+          throw error;
+        }
+        setLoading(false);
+      });
   };
   const resendVerification = async ({
     setErrors,
@@ -132,7 +139,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       setErrors([]);
       setStatus(null);
 
-      await axios.post("/api/v1/2fa/resend").then((response) => {
+      await axios.post("/api/v1/verify/resend").then((response) => {
         if (response.data.success) {
           setMessage(response.data.message);
         }
@@ -214,6 +221,9 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
     if (middleware === "auth" && error) {
       logout();
+    }
+    if (user && !currentUser) {
+      dispatch(setCurrentUser(user));
     }
   }, [user, error]);
 

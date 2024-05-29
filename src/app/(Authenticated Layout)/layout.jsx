@@ -9,6 +9,7 @@ import Sidebar from "./components/sidebar/Sidebar";
 import { useSelector } from "react-redux";
 import { useAuth } from "@/hooks/auth";
 import Loading from "../loading";
+import { PusherProvider } from "@/context/PusherContext";
 
 const MainWrapper = styled("div")(() => ({
   display: "flex",
@@ -37,50 +38,53 @@ export default function RootLayout({ children }) {
     return <Loading />;
   }
   return (
-    <MainWrapper>
-      {/* ------------------------------------------- */}
-      {/* Sidebar */}
-      {/* ------------------------------------------- */}
-
-      {/* ------------------------------------------- */}
-      {/* Main Wrapper */}
-      {/* ------------------------------------------- */}
-      <PageWrapper
-        className="page-wrapper"
-        sx={{
-          ...(customizer.isCollapse && {
-            [theme.breakpoints.up("lg")]: {
-              ml: `${customizer.MiniSidebarWidth}px`,
-            },
-          }),
-        }}
-      >
+    <PusherProvider>
+      <MainWrapper>
         {/* ------------------------------------------- */}
-        {/* Header */}
+        {/* Sidebar */}
         {/* ------------------------------------------- */}
-        <Header />
-        {/* PageContent */}
 
-        <Container
+        {/* ------------------------------------------- */}
+        {/* Main Wrapper */}
+        {/* ------------------------------------------- */}
+        <PageWrapper
+          className="page-wrapper"
           sx={{
-            maxWidth: customizer.isLayout === "boxed" ? "lg" : "100%!important",
+            ...(customizer.isCollapse && {
+              [theme.breakpoints.up("lg")]: {
+                ml: `${customizer.MiniSidebarWidth}px`,
+              },
+            }),
           }}
         >
           {/* ------------------------------------------- */}
+          {/* Header */}
+          {/* ------------------------------------------- */}
+          <Header />
           {/* PageContent */}
-          {/* ------------------------------------------- */}
 
-          <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
-            {/* <Outlet /> */}
-            {children}
-            {/* <Index /> */}
-          </Box>
+          <Container
+            sx={{
+              maxWidth:
+                customizer.isLayout === "boxed" ? "lg" : "100%!important",
+            }}
+          >
+            {/* ------------------------------------------- */}
+            {/* PageContent */}
+            {/* ------------------------------------------- */}
 
-          {/* ------------------------------------------- */}
-          {/* End Page */}
-          {/* ------------------------------------------- */}
-        </Container>
-      </PageWrapper>
-    </MainWrapper>
+            <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
+              {/* <Outlet /> */}
+              {children}
+              {/* <Index /> */}
+            </Box>
+
+            {/* ------------------------------------------- */}
+            {/* End Page */}
+            {/* ------------------------------------------- */}
+          </Container>
+        </PageWrapper>
+      </MainWrapper>
+    </PusherProvider>
   );
 }

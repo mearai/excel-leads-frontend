@@ -1,35 +1,40 @@
-import dynamic from 'next/dynamic';
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
-import { useTheme } from '@mui/material/styles';
-import { CardContent, Typography } from '@mui/material';
-import BlankCard from '../../shared/BlankCard';
-import { Stack } from '@mui/system';
+import dynamic from "next/dynamic";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { useTheme } from "@mui/material/styles";
+import { Box, CardContent, Typography } from "@mui/material";
+import BlankCard from "../../shared/BlankCard";
+import { Stack } from "@mui/system";
+import Loading from "@/app/loading";
+import React from "react";
+const Yaxis = (values) => {
+  return values.map((value) => value.count);
+};
+const Xaxis = (values) => {
+  return values.map((value) => value.date);
+};
+const Leads = ({ data }) => {
+  const leadsData = Yaxis(data);
+  const datesData = Xaxis(data);
 
-const Leads = () => {
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
+  const secondary = theme.palette.secondary.main;
 
   // chart
   const optionscolumnchart = {
     chart: {
-      type: 'area',
-      fontFamily: theme.typography.fontFamily,
-      foreColor: '#adb0bb',
+      type: "bar",
+      fontFamily: "'Plus Jakarta Sans', sans-serif;",
+      foreColor: "#adb0bb",
       toolbar: {
         show: false,
       },
-      height: 90,
-      sparkline: {
-        enabled: true,
-      },
+      height: 250,
+      stacked: true,
     },
-    colors: [primary],
+    colors: [primary, secondary],
 
-    stroke: {
-      curve: 'straight',
-      width: 2,
-    },
     dataLabels: {
       enabled: false,
     },
@@ -39,46 +44,68 @@ const Leads = () => {
     grid: {
       show: false,
     },
+    yaxis: {
+      tickAmount: 4,
+    },
     xaxis: {
-      axisBorder: {
-        show: true,
-      },
       axisTicks: {
         show: false,
       },
+      type: "category",
     },
     tooltip: {
-      theme: theme.palette.mode === 'dark' ? 'dark' : 'light',
+      theme: theme.palette.mode === "dark" ? "dark" : "light",
       fillSeriesColor: false,
     },
   };
   const seriescolumnchart = [
     {
-      name: 'asd',
-      data: [0, 150, 110, 240, 200, 200, 300, 200],
+      name: "Leads",
+      data: data,
     },
   ];
-
+  console.log(data);
   return (
     <BlankCard>
-      <CardContent sx={{ p: '30px' }}>
-        <Typography variant="h4">2,545</Typography>
-        <Stack direction="row" spacing={2} justifyContent="space-between">
-          <Typography variant="subtitle2" color="textSecondary">
-            Leads
-          </Typography>
-          <Typography variant="subtitle2" color="success.main">
-            +1.20%
-          </Typography>
+      <CardContent sx={{ p: "30px" }}>
+        <Box className="rounded-bars">
+          <Chart
+            options={optionscolumnchart}
+            series={seriescolumnchart}
+            type="line"
+            height="250px"
+            width={"100%"}
+          />
+        </Box>
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                width: "8px",
+                height: "8px",
+                backgroundColor: "primary.main",
+                borderRadius: "100%",
+              }}
+            ></Box>
+            <Typography variant="subtitle2" color="textSecondary">
+              San Francisco
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                width: "8px",
+                height: "8px",
+                backgroundColor: "secondary.main",
+                borderRadius: "100%",
+              }}
+            ></Box>
+            <Typography variant="subtitle2" color="textSecondary">
+              Diego
+            </Typography>
+          </Box>
         </Stack>
       </CardContent>
-      <Chart
-        options={optionscolumnchart}
-        series={seriescolumnchart}
-        type="area"
-        height="190px"
-        width={'100%'}
-      />
     </BlankCard>
   );
 };

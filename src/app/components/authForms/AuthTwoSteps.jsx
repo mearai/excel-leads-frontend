@@ -1,8 +1,6 @@
 "use client";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
 import CustomTextField from "@/app/components/forms/theme-elements/CustomTextField";
 import CustomFormLabel from "@/app/components/forms/theme-elements/CustomFormLabel";
 import { Stack } from "@mui/system";
@@ -13,6 +11,7 @@ import { setGlobalError, setGlobalSuccess } from "@/store/message/MessageSlice";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/auth";
+import ButtonWithLoading from "../buttons/ButtonWithLoading";
 
 const generateVerificationCodeValidation = () => {
   return yup
@@ -55,7 +54,12 @@ const AuthTwoSteps = () => {
     onSubmit: (values) => {
       // Concatenate all the values into a single string
       const mergedCode = Object.values(values).join("");
-      verifyCode({ code: mergedCode, setErrors, setStatus, setLoading });
+      verifyCode({
+        two_factor_code: mergedCode,
+        setErrors,
+        setStatus,
+        setLoading,
+      });
     },
   });
 
@@ -141,16 +145,8 @@ const AuthTwoSteps = () => {
             </Typography>
           )}
         </Stack>
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          fullWidth
-          type="submit"
-          disabled={loading}
-        >
-          Verify My Account
-        </Button>
+
+        <ButtonWithLoading text={"Verify My Account"} loading={loading} />
 
         <Stack direction="row" spacing={1} mt={3}>
           <Typography color="textSecondary" variant="h6" fontWeight="400">

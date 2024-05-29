@@ -3,12 +3,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
-
-const StyledButton = styled(Button)(() => ({
-  padding: "13px 48px",
-  fontSize: "16px",
-}));
 
 const BannerContent = () => {
   return (
@@ -25,13 +19,12 @@ const BannerContent = () => {
           },
         }}
       >
-        Welcome to{" "}
         <Typography component={"span"} variant="inherit" color={"primary"}>
           Flow Digital
         </Typography>{" "}
-        Lead Management Dashobard
+        Lead Management
       </Typography>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mt={3}>
+      {/* <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mt={3}>
         <Button
           sx={{
             padding: "13px 48px",
@@ -46,7 +39,7 @@ const BannerContent = () => {
         >
           Login
         </Button>
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };

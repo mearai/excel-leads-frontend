@@ -1,5 +1,6 @@
 "use client";
 import {
+  Badge,
   IconButton,
   Stack,
   TableCell,
@@ -15,9 +16,13 @@ export default function CustomTableRow({ lead }) {
   if (!lead) {
     return;
   }
+  const rowColor = lead.is_read ? "#035a16" : "#a72828"; // Light cyan if read, light red if not read
+
   return (
     <>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow
+        sx={{ "& > *": { borderBottom: "unset", backgroundColor: rowColor } }}
+      >
         <TableCell>
           <Typography color="textSecondary" variant="h6">
             {lead.id}
@@ -36,7 +41,7 @@ export default function CustomTableRow({ lead }) {
 
         <TableCell colSpan={1}>
           <Typography color="textSecondary" variant="h6" fontWeight="400">
-            {lead.created_at_date} {lead.created_at_time}
+            {lead.created_at}
           </Typography>
         </TableCell>
         <TableCell>
