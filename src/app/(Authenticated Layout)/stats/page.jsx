@@ -16,11 +16,13 @@ import Pusher from "pusher-js";
 import { setGlobalSuccess } from "@/store/message/MessageSlice";
 function page() {
   const [leadsCount, setLeadsCount] = useState([]);
+  const [stats, setStats] = useState([]);
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const fetchStats = async () => {
     const stats = await fetchLeadsStats(); // Fetch leads stats
     setLeadsCount(stats); // Update leads count state
+    setStats(stats); // Update leads count state
   };
   useEffect(() => {
     if (leadsCount.length >= 0) {
@@ -31,8 +33,8 @@ function page() {
 
   return (
     <PageContainer title="Dashboard">
-      <Leads leadscount={leadsCount} />
-      <YearlySales />
+      <Leads leadscount={leadsCount} data={stats} />
+      <YearlySales data={stats} />
     </PageContainer>
   );
 }

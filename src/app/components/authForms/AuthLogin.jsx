@@ -2,7 +2,6 @@
 import { useFormik } from "formik";
 import * as yup from "yup";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
@@ -12,6 +11,7 @@ import { useAuth } from "@/hooks/auth";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setGlobalError } from "@/store/message/MessageSlice";
+import ButtonWithLoading from "../buttons/ButtonWithLoading";
 
 const AuthLogin = ({ title, subtitle, subtext }) => {
   const dispatch = useDispatch();
@@ -111,18 +111,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
             </Typography>
           </Stack>
         </Stack>
-        <Box>
-          <Button
-            color="primary"
-            variant="contained"
-            size="large"
-            fullWidth
-            type="submit"
-            disabled={loading}
-          >
-            Sign In
-          </Button>
-        </Box>
+        <ButtonWithLoading text={"Sign In"} loading={loading} />
         {subtitle}
       </form>
     </Box>

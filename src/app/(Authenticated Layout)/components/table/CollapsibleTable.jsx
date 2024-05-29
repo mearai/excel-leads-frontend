@@ -18,7 +18,6 @@ import { useState } from "react";
 import CustomTableRow from "./CustomTableRow";
 
 const CollapsibleTable = ({ leads }) => {
-  console.log(leads);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 

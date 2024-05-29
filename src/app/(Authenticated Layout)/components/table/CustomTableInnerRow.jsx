@@ -14,6 +14,7 @@ import {
 import ClipboardJS from "clipboard";
 import { useDispatch } from "react-redux";
 import { setGlobalError, setGlobalSuccess } from "@/store/message/MessageSlice";
+import axios from "@/lib/axios";
 
 const formatKey = (key) => {
   return key
@@ -33,6 +34,44 @@ const formatData = (data) => {
     })
     .join("\n"); // Use newline character to separate each line
 };
+
+const renderTableRows = (details, prefix = "") => {
+  return Object.entries(details).map(([key, value]) => {
+    const formattedKey = prefix
+      ? `${prefix} - ${formatKey(key)}`
+      : formatKey(key);
+    if (typeof value === "object" && !Array.isArray(value)) {
+      return (
+        <React.Fragment key={key}>
+          <TableRow>
+            <TableCell colSpan={2}>
+              <Typography color="textSecondary" fontWeight="700">
+                {formattedKey}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          {renderTableRows(value, formattedKey)}
+        </React.Fragment>
+      );
+    } else {
+      return (
+        <TableRow key={key}>
+          <TableCell width={"50%"}>
+            <Typography color="textSecondary" fontWeight="400">
+              {formattedKey}
+            </Typography>
+          </TableCell>
+          <TableCell width={"50%"}>
+            <Typography color="textSecondary" fontWeight="400">
+              {Array.isArray(value) ? value.join(", ") : value}
+            </Typography>
+          </TableCell>
+        </TableRow>
+      );
+    }
+  });
+};
+
 const CustomTableInnerRow = ({ details, open, id }) => {
   const buttonRef = useRef(null);
   const tableRef = useRef(null);
@@ -42,14 +81,28 @@ const CustomTableInnerRow = ({ details, open, id }) => {
   }
   useEffect(() => {
     if (!open) return;
+    const handleCopySuccess = async () => {
+      dispatch(setGlobalSuccess("Lead copied to clipboard!"));
 
+      // Mark the lead as read
+      try {
+        await axios.patch(`/api/v1/leads/${id}/read`);
+        console.log("Lead marked as read.");
+      } catch (error) {
+        console.error("Error marking lead as read: ", error);
+        dispatch(setGlobalError("Error marking lead as read"));
+      }
+    };
+    console.log(details);
     const clipboard = new ClipboardJS(buttonRef.current, {
       text: () => formatData(details),
     });
 
     clipboard.on("success", (e) => {
       e.clearSelection();
+
       dispatch(setGlobalSuccess("Lead copied to clipboard!"));
+      handleCopySuccess();
     });
 
     clipboard.on("error", (e) => {
@@ -124,7 +177,7 @@ const CustomTableInnerRow = ({ details, open, id }) => {
                 </Stack>
               </Typography>
               <Table size="small" aria-label="details">
-                <TableBody>
+                {/* <TableBody>
                   {Object.entries(details).map(([key, value]) => (
                     <TableRow key={key}>
                       <TableCell width={"50%"}>
@@ -143,7 +196,8 @@ const CustomTableInnerRow = ({ details, open, id }) => {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
+                </TableBody> */}
+                <TableBody>{renderTableRows(details)}</TableBody>
               </Table>
             </Box>
           </Collapse>
