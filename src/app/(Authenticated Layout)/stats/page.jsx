@@ -14,6 +14,7 @@ import axios from "@/lib/axios";
 import YearlySales from "../components/widgets/charts/Yearly";
 import Pusher from "pusher-js";
 import { setGlobalSuccess } from "@/store/message/MessageSlice";
+import { Grid } from "@mui/material";
 function page() {
   const [leadsCount, setLeadsCount] = useState([]);
   const [stats, setStats] = useState([]);
@@ -32,10 +33,14 @@ function page() {
   }, []);
 
   return (
-    <PageContainer title="Dashboard">
-      <Leads leadscount={leadsCount} data={stats} />
-      <YearlySales data={stats} />
-    </PageContainer>
+    <Grid container spacing={3} paddingTop={"40px"}>
+      <Grid item xs={12} sm={6}>
+        <Leads leadscount={leadsCount} data={stats} />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <YearlySales data={stats} />
+      </Grid>
+    </Grid>
   );
 }
 export default page;

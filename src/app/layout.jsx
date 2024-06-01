@@ -1,39 +1,16 @@
-"use client";
 import React from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeSettings } from "@/utils/theme/Theme";
-import { store } from "@/store/store";
-import { useSelector } from "react-redux";
-
-import { Provider } from "react-redux";
-
-import MessageSnackbar from "./components/layout/snackbar/MessageSnackbar";
-
-export const MyApp = ({ children }) => {
-  const theme = ThemeSettings();
-
-  const customizer = useSelector((state) => state.customizer);
-
-  return (
-    <>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </>
-  );
+import ThemeLayout from "./components/layout/theme/ThemeLayout";
+export const metadata = {
+  title: {
+    template: "%s | Flow Digital",
+    default: "Flow Digital", // a default is required when creating a template
+  },
 };
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Provider store={store}>
-          <MyApp children={children} />
-          <MessageSnackbar />
-        </Provider>
+        <ThemeLayout children={children} />
       </body>
     </html>
   );
