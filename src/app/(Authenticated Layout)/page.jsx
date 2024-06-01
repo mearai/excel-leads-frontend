@@ -22,14 +22,14 @@ function page() {
     return <Loading />;
   }
   return (
-    // <PageContainer title="Dashboard" description="Flow digital">
-    <>
-      <CollapsibleTable leads={leads.leads}></CollapsibleTable>
-      {/* <Leads leadscount={leadsCount}/>
+    <PageContainer title="Dashboard" description="Flow digital">
+      <>
+        <CollapsibleTable leads={leads.leads}></CollapsibleTable>
+        {/* <Leads leadscount={leadsCount}/>
       
       <YearlySales/> */}
-    </>
-    // </PageContainer>
+      </>
+    </PageContainer>
   );
 }
 export default page;

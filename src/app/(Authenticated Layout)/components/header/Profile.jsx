@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Link from "next/link";
+
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -7,15 +7,14 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import * as dropdownData from "./data";
-
 import { IconMail } from "@tabler/icons-react";
 import { Stack } from "@mui/system";
-import Image from "next/image";
+import { useSelector } from "react-redux";
 import { useAuth } from "@/hooks/auth";
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const currentUser = useSelector((state) => state.auth.currentUser);
   const [anchorEl2, setAnchorEl2] = useState(null);
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
@@ -41,7 +40,7 @@ const Profile = () => {
       >
         <Avatar
           src={"/images/profile/user-1.jpg"}
-          alt={user?.name}
+          alt={currentUser?.name}
           sx={{
             width: 35,
             height: 35,
@@ -70,7 +69,7 @@ const Profile = () => {
         <Stack direction="row" py={3} spacing={2} alignItems="center">
           <Avatar
             src={"/images/profile/user-1.jpg"}
-            alt={user?.name}
+            alt={currentUser?.name}
             sx={{ width: 95, height: 95 }}
           />
           <Box>
@@ -79,7 +78,7 @@ const Profile = () => {
               color="textPrimary"
               fontWeight={600}
             >
-              {user?.name}
+              {currentUser?.name}
             </Typography>
 
             <Typography
@@ -90,7 +89,7 @@ const Profile = () => {
               gap={1}
             >
               <IconMail width={15} height={15} />
-              {user?.email}
+              {currentUser?.email}
             </Typography>
           </Box>
         </Stack>

@@ -3,18 +3,30 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MessageSnackbar from "../snackbar/MessageSnackbar";
 import { ThemeSettings } from "@/utils/theme/Theme";
-import { useSelector } from "react-redux";
+import { Provider, useSelector } from "react-redux";
+import { store } from "@/store/store";
 
-function ThemeLayout({children}) {
- const theme = ThemeSettings();
+export const MyApp = ({ children }) => {
+  const theme = ThemeSettings();
 
   const customizer = useSelector((state) => state.customizer);
+
   return (
-    <ThemeProvider theme={theme}>
-            <CssBaseline />
+    <>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
         {children}
-        <MessageSnackbar /> 
-    </ThemeProvider>
-  )
+      </ThemeProvider>
+    </>
+  );
+};
+function ThemeLayout({ children }) {
+  return (
+    <Provider store={store}>
+      <MyApp children={children} />
+      <MessageSnackbar />
+    </Provider>
+  );
 }
-export default ThemeLayout
+export default ThemeLayout;

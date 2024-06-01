@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Snackbar from "@mui/material/Snackbar";
@@ -10,6 +11,8 @@ const MessageSnackbar = () => {
   const errorMessage = useSelector((state) => state.message.error);
   const successMessage = useSelector((state) => state.message.success);
   const [open, setOpen] = useState(false);
+  const [localErrorMessage, setLocalErrorMessage] = useState("");
+  const [localSuccessMessage, setLocalSuccessMessage] = useState("");
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -21,6 +24,12 @@ const MessageSnackbar = () => {
   React.useEffect(() => {
     if (errorMessage || successMessage) {
       setOpen(true);
+      if (errorMessage) {
+        setLocalErrorMessage(errorMessage);
+      }
+      if (successMessage) {
+        setLocalSuccessMessage(successMessage);
+      }
     }
   }, [errorMessage, successMessage]);
 
@@ -41,14 +50,14 @@ const MessageSnackbar = () => {
         onExited: handleExited,
       }} // Adjust timeout as needed
     >
-      {errorMessage ? (
+      {localErrorMessage ? (
         <Alert
           onClose={handleClose}
           severity="error"
           variant="filled"
           sx={{ width: "100%" }}
         >
-          {errorMessage}
+          {localErrorMessage}
         </Alert>
       ) : (
         <Alert
@@ -57,7 +66,7 @@ const MessageSnackbar = () => {
           variant="filled"
           sx={{ width: "100%" }}
         >
-          {successMessage}
+          {localSuccessMessage}
         </Alert>
       )}
     </Snackbar>

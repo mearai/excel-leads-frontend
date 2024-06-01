@@ -12,6 +12,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/auth";
 import ButtonWithLoading from "../buttons/ButtonWithLoading";
+import { Card } from "@mui/material";
+import Logo from "../layout/logo/Logo";
 
 const generateVerificationCodeValidation = () => {
   return yup
@@ -114,59 +116,85 @@ const AuthTwoSteps = () => {
     }
   }, [errors, message]);
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <Box mt={4}>
-        <Stack mb={3}>
-          <CustomFormLabel htmlFor="code">
-            Type your 6 digits security code
-          </CustomFormLabel>
-          <Stack spacing={2} direction="row">
-            {[...Array(6)].map((_, index) => (
-              <CustomTextField
-                key={index}
-                fullWidth
-                id={`code${index + 1}`}
-                name={`code${index + 1}`}
-                value={formik.values[`code${index + 1}`]}
-                onChange={(e) => handleOnChange(e, index)}
-                error={
-                  formik.touched[`code${index + 1}`] &&
-                  Boolean(formik.errors[`code${index + 1}`])
-                }
-                onPaste={handlePaste} // Add onPaste handler
-                inputRef={(el) => (inputRefs.current[index] = el)}
-                variant="outlined"
-              />
-            ))}
-          </Stack>
-          {formik.submitCount > 0 && Object.keys(formik.errors).length > 0 && (
-            <Typography variant="body1" color="error">
-              Invalid code format. *Only numeric values are accepted.
-            </Typography>
-          )}
-        </Stack>
-
-        <ButtonWithLoading text={"Verify My Account"} loading={loading} />
-
-        <Stack direction="row" spacing={1} mt={3}>
-          <Typography color="textSecondary" variant="h6" fontWeight="400">
-            Didn&apos;t get the code?
-          </Typography>
-          <Typography
-            // component={Link}
-            // href="/"
-            onClick={handleResend}
-            fontWeight="500"
-            sx={{
-              textDecoration: "none",
-              color: "primary.main",
-            }}
-          >
-            Resend
-          </Typography>
-        </Stack>
+    <Card
+      elevation={9}
+      sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "450px" }}
+    >
+      <Box display="flex" alignItems="center" justifyContent="center">
+        <Logo />
       </Box>
-    </form>
+      <Typography
+        variant="subtitle1"
+        textAlign="center"
+        color="textSecondary"
+        mb={1}
+      >
+        We sent a verification code to your mobile. Enter the code from the
+        mobile in the field below.
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        textAlign="center"
+        fontWeight="700"
+        mb={1}
+      >
+        ******1234
+      </Typography>
+      <form onSubmit={formik.handleSubmit}>
+        <Box mt={4}>
+          <Stack mb={3}>
+            <CustomFormLabel htmlFor="code">
+              Type your 6 digits security code
+            </CustomFormLabel>
+            <Stack spacing={2} direction="row">
+              {[...Array(6)].map((_, index) => (
+                <CustomTextField
+                  key={index}
+                  fullWidth
+                  id={`code${index + 1}`}
+                  name={`code${index + 1}`}
+                  value={formik.values[`code${index + 1}`]}
+                  onChange={(e) => handleOnChange(e, index)}
+                  error={
+                    formik.touched[`code${index + 1}`] &&
+                    Boolean(formik.errors[`code${index + 1}`])
+                  }
+                  onPaste={handlePaste} // Add onPaste handler
+                  inputRef={(el) => (inputRefs.current[index] = el)}
+                  variant="outlined"
+                />
+              ))}
+            </Stack>
+            {formik.submitCount > 0 &&
+              Object.keys(formik.errors).length > 0 && (
+                <Typography variant="body1" color="error">
+                  Invalid code format. *Only numeric values are accepted.
+                </Typography>
+              )}
+          </Stack>
+
+          <ButtonWithLoading text={"Verify My Account"} loading={loading} />
+
+          <Stack direction="row" spacing={1} mt={3}>
+            <Typography color="textSecondary" variant="h6" fontWeight="400">
+              Didn&apos;t get the code?
+            </Typography>
+            <Typography
+              // component={Link}
+              // href="/"
+              onClick={handleResend}
+              fontWeight="500"
+              sx={{
+                textDecoration: "none",
+                color: "primary.main",
+              }}
+            >
+              Resend
+            </Typography>
+          </Stack>
+        </Box>
+      </form>
+    </Card>
   );
 };
 

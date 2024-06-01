@@ -4,46 +4,16 @@ import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "@/store/auth/AuthSlice";
+import { setGlobalError } from "@/store/message/MessageSlice";
 
+const fetcher = (url) => axios.get(url).then((res) => res.data.data);
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   const router = useRouter();
   const params = useParams();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
-  const {
-    data: user,
-    error,
-    mutate,
-  } = useSWR("/api/user", () =>
-    axios
-      .get("/api/user")
-      .then((res) => {
-        if (res.data.success) {
-          return res.data.data;
-        }
-        console.log("success.response");
-        console.log(res.data.data);
-      })
-      .catch((error) => {
-        if (
-          error.response.status === 401 &&
-          error.response.data.message === "Verification code required"
-        ) {
-          console.log("error.response");
-          console.log(
-            error.response.data.message === "Verification code required"
-          );
-          router.push("/verify-code");
-          // logout()
-        }
-        if (error.response.status !== 409) {
-          throw error;
-        }
-
-        // router.push("/verify-email");
-      })
-  );
+  const { data: user, error, mutate } = useSWR("/api/v1/user", fetcher);
 
   const csrf = () => axios.get("/sanctum/csrf-cookie");
 
@@ -61,22 +31,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         setErrors(error.response.data.errors);
       });
   };
-
-  // const login = async ({ setErrors, setStatus, ...props }) => {
-  //     await csrf()
-
-  //     setErrors([])
-  //     setStatus(null)
-
-  //     axios
-  //         .post('/login', props)
-  //         .then(() => mutate())
-  //         .catch(error => {
-  //             if (error.response.status !== 422) throw error
-
-  //             setErrors(error.response.data.errors)
-  //         })
-  // }
   const login = async ({ setErrors, setStatus, setLoading, ...props }) => {
     await csrf();
 
@@ -86,10 +40,8 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     axios
       .post("/login", props)
       .then((response) => {
-        if (response.data.success == true) {
-          mutate();
-          router.push("/verify-code");
-        }
+        mutate();
+        router.push("/verify-code");
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;
@@ -107,22 +59,21 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     await axios
       .post("/api/v1/verify", props)
       .then((response) => {
-        console.log("login response");
-        console.log(response);
         if (response.data.success == true) {
           mutate();
-          router.push("/verify-code");
+          // router.push("/login");
+          setLoading(false);
         }
       })
       .catch((error) => {
         if (error.response && error.response.status === 422) {
+          setLoading(false);
           setErrors(error.response.data);
           if (error.response.data.message === "Verification code expired") {
           }
         } else {
           throw error;
         }
-        setLoading(false);
       });
   };
   const resendVerification = async ({
@@ -206,9 +157,18 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   useEffect(() => {
     if (
       window.location.pathname === "/verify-code" &&
-      error?.response.data.message === "Unauthenticated."
+      (error?.response?.data?.code === "unauth" ||
+        error?.response?.data?.code === "expired")
     ) {
+      console.log("ok got it");
       router.push("/login");
+      dispatch(setGlobalError(error?.response?.data?.code));
+    }
+    if (
+      window.location.pathname === "/login" &&
+      error?.response?.data?.code === "required"
+    ) {
+      router.push("/verify-code");
     }
     if (middleware === "guest" && redirectIfAuthenticated && user) {
       router.push(redirectIfAuthenticated);
