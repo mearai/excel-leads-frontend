@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useContext } from "react";
 import Pusher from "pusher-js";
 import { useDispatch } from "react-redux";
 import { addLeads } from "@/store/leads/LeadsSlice"; // Adjust the import path according to your project
-import { setGlobalSuccess } from "@/store/message/MessageSlice";
+import { addMessage } from "@/store/message/MessageSlice";
 
 const PusherContext = createContext();
 
@@ -22,10 +22,17 @@ export const PusherProvider = ({ children }) => {
     const channel = pusher.subscribe("leads");
 
     // Bind to the 'LeadCreated' event
-    channel.bind("lead-created", function (message) {
+    channel.bind("lead-create", function (message) {
+      console.log(message);
       if (message) {
         dispatch(addLeads(message.lead));
-        dispatch(setGlobalSuccess("New Lead Received!"));
+
+        dispatch(
+          addMessage({
+            type: "success",
+            text: "New Lead Received!",
+          })
+        );
         playNotificationSound();
       }
     });

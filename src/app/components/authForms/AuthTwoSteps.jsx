@@ -6,16 +6,17 @@ import CustomFormLabel from "@/app/components/forms/theme-elements/CustomFormLab
 import { Stack } from "@mui/system";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "react-redux";
-import { setGlobalError, setGlobalSuccess } from "@/store/message/MessageSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addMessage } from "@/store/message/MessageSlice";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/auth";
 import ButtonWithLoading from "../buttons/ButtonWithLoading";
 import { Card } from "@mui/material";
 import Logo from "../layout/logo/Logo";
+import Loading from "@/app/loading";
 
-const generateVerificationCodeValidation = () => {
+const codeValidation = () => {
   return yup
     .string()
     .matches(/^\d{0,1}$/, "Value must be a single digit between 0 and 9")
@@ -23,12 +24,12 @@ const generateVerificationCodeValidation = () => {
 };
 
 const validationSchema = yup.object({
-  code1: generateVerificationCodeValidation(),
-  code2: generateVerificationCodeValidation(),
-  code3: generateVerificationCodeValidation(),
-  code4: generateVerificationCodeValidation(),
-  code5: generateVerificationCodeValidation(),
-  code6: generateVerificationCodeValidation(),
+  code1: codeValidation(),
+  code2: codeValidation(),
+  code3: codeValidation(),
+  code4: codeValidation(),
+  code5: codeValidation(),
+  code6: codeValidation(),
 });
 const AuthTwoSteps = () => {
   const router = useRouter();
@@ -36,11 +37,16 @@ const AuthTwoSteps = () => {
   const [errors, setErrors] = useState([]);
   const [message, setMessage] = useState();
   const [status, setStatus] = useState(null);
+  const email = useSelector((state) => state.auth.currentUserEmail);
 
   const { verifyCode, resendVerification, user } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/dashboard",
+    redirectIfAuthenticated: "/",
   });
+  if (!email) {
+    console.log(email);
+    return <Loading />;
+  }
   const dispatch = useDispatch();
   const inputRefs = useRef([]);
   const formik = useFormik({
@@ -82,7 +88,7 @@ const AuthTwoSteps = () => {
 
     // Update the formik values
     formik.setValues(updatedValues);
-    console.log(i);
+
     // Move the cursor to the next field if necessary
     if (i < 5) {
       inputRefs.current[i + 1].focus();
@@ -106,15 +112,24 @@ const AuthTwoSteps = () => {
     formik.setValues(updatedValues);
   };
   useEffect(() => {
-    if (errors) {
-      console.log(errors);
-      dispatch(setGlobalError(errors?.message));
+    if (errors.message) {
+      dispatch(
+        addMessage({
+          type: "error",
+          text: errors?.message,
+        })
+      );
     }
     if (message) {
-      console.log(errors);
-      dispatch(setGlobalSuccess(message));
+      dispatch(
+        addMessage({
+          type: "success",
+          text: message,
+        })
+      );
     }
-  }, [errors, message]);
+  }, [errors, message, dispatch]);
+
   return (
     <Card
       elevation={9}
@@ -138,7 +153,7 @@ const AuthTwoSteps = () => {
         fontWeight="700"
         mb={1}
       >
-        ******1234
+        {email}
       </Typography>
       <form onSubmit={formik.handleSubmit}>
         <Box mt={4}>

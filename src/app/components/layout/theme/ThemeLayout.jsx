@@ -3,8 +3,8 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MessageSnackbar from "../snackbar/MessageSnackbar";
 import { ThemeSettings } from "@/utils/theme/Theme";
-import { Provider, useSelector } from "react-redux";
-import { store } from "@/store/store";
+import { useSelector } from "react-redux";
+import { StoreProvider } from "@/store/Provider";
 
 export const MyApp = ({ children }) => {
   const theme = ThemeSettings();
@@ -23,10 +23,10 @@ export const MyApp = ({ children }) => {
 };
 function ThemeLayout({ children }) {
   return (
-    <Provider store={store}>
-      <MyApp children={children} />
+    <StoreProvider>
+      <MyApp>{children}</MyApp>
       <MessageSnackbar />
-    </Provider>
+    </StoreProvider>
   );
 }
 export default ThemeLayout;

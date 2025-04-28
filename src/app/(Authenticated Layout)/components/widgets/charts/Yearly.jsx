@@ -1,41 +1,55 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
-import { useTheme } from '@mui/material/styles';
+import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { useTheme } from "@mui/material/styles";
 
-import DashboardWidgetCard from '../../shared/DashboardWidgetCard';
-import SkeletonYearlySalesCard from '../skeletons/SkeletonYearlySalesCard';
-import { Box } from '@mui/material';
+import DashboardWidgetCard from "../../shared/DashboardWidgetCard";
+import SkeletonYearlySalesCard from "../skeletons/SkeletonYearlySalesCard";
+import { Box } from "@mui/material";
 
-const YearlySales = ({ isLoading }) => {
+const YearlySales = ({ data }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (data) {
+      setIsLoading(false);
+    }
+  }, [data]);
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
-  const primarylight = theme.palette.grey[100];
+  const secondary = theme.palette.secondary.main;
 
   // chart
   const optionscolumnchart = {
     chart: {
-      type: 'bar',
-      fontFamily:theme.typography.fontFamily,
-      foreColor: '#adb0bb',
+      type: "bar",
+      fontFamily: theme.typography.fontFamily,
+      foreColor: "#adb0bb",
       toolbar: {
         show: false,
       },
       height: 295,
     },
-    colors: [primarylight, primarylight, primary, primarylight, primarylight, primarylight],
-    plotOptions: {
-      bar: {
-        borderRadius: 4,
-        columnWidth: '45%',
-        distributed: true,
-        endingShape: 'rounded',
+    colors: [primary, secondary],
+    dataLabels: {
+      enabled: true,
+
+      offsetY: -20,
+      style: {
+        fontSize: "12px",
+        colors: ["#adb0bb"],
       },
     },
-    dataLabels: {
-      enabled: false,
+    plotOptions: {
+      bar: {
+        borderRadius: 10,
+        dataLabels: {
+          position: "top", // top, center, bottom
+        },
+      },
     },
+
     legend: {
       show: false,
     },
@@ -47,24 +61,39 @@ const YearlySales = ({ isLoading }) => {
       },
     },
     xaxis: {
-      categories: [['Apr'], ['May'], ['June'], ['July'], ['Aug'], ['Sept']],
-      axisBorder: {
-        show: false,
+      // position: "top",
+      tooltip: {
+        enabled: true,
       },
+      axisTicks: {
+        // show: false,
+      },
+      axisBorder: { show: false },
     },
+
     yaxis: {
       labels: {
-        show: false,
+        // show: false,
       },
+      axisTicks: {
+        show: true,
+      },
+      // axisBorder: {
+      //   show: true,
+      //   color: "#78909C",
+      //   offsetX: 0,
+      //   offsetY: 0,
+      // },
     },
     tooltip: {
-      theme: theme.palette.mode === 'dark' ? 'dark' : 'light',
+      theme: theme.palette.mode === "dark" ? "dark" : "light",
     },
   };
   const seriescolumnchart = [
     {
-      name: '',
-      data: [20, 15, 30, 25, 10, 15],
+      name: "Leads",
+      // data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
+      data: data,
     },
   ];
 
@@ -73,22 +102,15 @@ const YearlySales = ({ isLoading }) => {
       {isLoading ? (
         <SkeletonYearlySalesCard />
       ) : (
-        <DashboardWidgetCard
-          title="Yearly Sales"
-          subtitle="Total Sales"
-          dataLabel1="Salary"
-          dataItem1="$36,358"
-          dataLabel2="Expance"
-          dataItem2="$5,296"
-        >
+        <DashboardWidgetCard title="Last 12 Months Leads">
           <>
-            <Box height="310px">
+            <Box>
               <Chart
                 options={optionscolumnchart}
                 series={seriescolumnchart}
                 type="bar"
-                height="295px"
-                width={'100%'}
+                height="350px"
+                width={"100%"}
               />
             </Box>
           </>

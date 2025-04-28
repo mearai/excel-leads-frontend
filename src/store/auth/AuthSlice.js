@@ -6,12 +6,13 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 //   return response.data;
 // });
 
-const authSlice = createSlice({
+const AuthSlice = createSlice({
   name: "auth",
   initialState: {
     currentUser: null,
     status: "idle",
     error: null,
+    currentUserEmail: null,
   },
   reducers: {
     setCurrentUser: (state, action) => {
@@ -20,9 +21,21 @@ const authSlice = createSlice({
     clearCurrentUser: (state) => {
       state.currentUser = null;
     },
+    setCurrentUserEmail: (state, action) => {
+      console.log("Action Invoked : " + action.payload);
+      state.currentUserEmail = action.payload;
+    },
+    clearCurrentUserEmail: (state) => {
+      state.currentUserEmail = null;
+    },
   },
 });
 
-export const { setCurrentUser, clearCurrentUser } = authSlice.actions;
+export const {
+  setCurrentUser,
+  clearCurrentUser,
+  setCurrentUserEmail,
+  clearCurrentUserEmail,
+} = AuthSlice.actions;
 
-export default authSlice.reducer;
+export default AuthSlice.reducer;

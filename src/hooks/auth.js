@@ -3,8 +3,13 @@ import axios from "@/lib/axios";
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentUser } from "@/store/auth/AuthSlice";
-import { setGlobalError } from "@/store/message/MessageSlice";
+import {
+  clearCurrentUser,
+  clearCurrentUserEmail,
+  setCurrentUser,
+  setCurrentUserEmail,
+} from "@/store/auth/AuthSlice";
+import { addMessage } from "@/store/message/MessageSlice";
 
 const fetcher = (url) => axios.get(url).then((res) => res.data.data);
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
@@ -13,7 +18,15 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 
-  const { data: user, error, mutate } = useSWR("/api/v1/user", fetcher);
+  const {
+    data: user,
+    error,
+    mutate,
+  } = useSWR("/api/v1/user", fetcher, {
+    revalidateOnFocus: true, // re-check when tab regains focus
+    revalidateOnReconnect: true, // re-check after hibernate/wake
+    refreshInterval: 10000,
+  });
 
   const csrf = () => axios.get("/sanctum/csrf-cookie");
 
@@ -41,15 +54,25 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       .post("/login", props)
       .then((response) => {
         mutate();
+        if (response.data.email) {
+          const email = response.data.email;
+          dispatch(setCurrentUserEmail(email));
+        }
         router.push("/verify-code");
       })
       .catch((error) => {
-        if (error.response.status !== 422) throw error;
+        // if (error.response.status !== 422) throw error;
         setLoading(false);
         setErrors(error.response.data);
       });
   };
-  const verifyCode = async ({ setErrors, setStatus, setLoading, ...props }) => {
+  const verifyCode = async ({
+    setErrors,
+    setStatus,
+    setLoading,
+
+    ...props
+  }) => {
     setLoading(true); // Set loading to true when the request starts
     await csrf();
 
@@ -61,17 +84,20 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       .then((response) => {
         if (response.data.success == true) {
           mutate();
-          // router.push("/login");
-          setLoading(false);
+          // router.push("/");
+          // setLoading(false);
         }
       })
       .catch((error) => {
-        if (error.response && error.response.status === 422) {
+        if (error.response && error.response.status === 403) {
+          setErrors(error.response.data);
+          logout();
+        } else if (error.response && error.response.status === 422) {
           setLoading(false);
           setErrors(error.response.data);
-          if (error.response.data.message === "Verification code expired") {
-          }
+          console.error("asd");
         } else {
+          setLoading(false);
           throw error;
         }
       });
@@ -149,6 +175,9 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   const logout = async () => {
     if (!error) {
       await axios.post("/logout").then(() => mutate());
+
+      dispatch(clearCurrentUser());
+      dispatch(clearCurrentUserEmail());
     }
 
     window.location.pathname = "/login";
@@ -160,10 +189,25 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       (error?.response?.data?.code === "unauth" ||
         error?.response?.data?.code === "expired")
     ) {
-      console.log("ok got it");
       router.push("/login");
-      dispatch(setGlobalError(error?.response?.data?.code));
+      // dispatch(
+      //   addMessage({
+      //
+      //     type: "error",
+      //     text: error?.response?.data?.message,
+      //   })
+      // );
     }
+    // if (error?.response?.data?.code === "invalid_ip") {
+    // dispatch(
+    //   addMessage({
+    //
+    //     type: "error",
+    //     text: error?.response?.data?.message,
+    //   })
+    // );
+    //   // logout();
+    // }
     if (
       window.location.pathname === "/login" &&
       error?.response?.data?.code === "required"
@@ -183,6 +227,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       logout();
     }
     if (user && !currentUser) {
+      console.log(user);
       dispatch(setCurrentUser(user));
     }
   }, [user, error]);

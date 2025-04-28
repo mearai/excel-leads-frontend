@@ -33,10 +33,6 @@ export default function RootLayout({ children }) {
         }}
       >
         <Box position="relative">
-          <Box px={3}>
-            <Logo />
-          </Box>
-
           <Banner />
 
           <Footer />

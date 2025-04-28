@@ -11,15 +11,29 @@ import {
   TableRow,
   TablePagination,
   TableFooter,
+  Box,
+  IconButton,
 } from "@mui/material";
 import ParentCard from "../shared/ParentCard";
 import BlankCard from "../shared/BlankCard";
-import { useState } from "react";
-import CustomTableRow from "./CustomTableRow";
+import { useEffect, useState } from "react";
+import axios from "@/lib/axios"; // Assuming you are using axios for API calls
+import { IconTrash } from "@tabler/icons-react";
+import { addMessage } from "@/store/message/MessageSlice";
+import { useDispatch } from "react-redux";
+import Loading from "@/app/loading";
+import { deleteIp } from "@/store/ip/ipSlice";
 
-const CollapsibleTable = ({ leads }) => {
+const WhitelistedIpsTable = ({ ips }) => {
+  const dispatch = useDispatch();
+  // const [ips, setIps] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  if (ips.data.length == 0) {
+    return <Loading />;
+  }
+
+  // Fetch IPs when the component mounts
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -30,12 +44,13 @@ const CollapsibleTable = ({ leads }) => {
     setPage(0); // Reset to the first page
   };
 
+  const handleDeleteIp = async (id) => {
+    dispatch(deleteIp(id));
+  };
+
   return (
     <>
-      {/* breadcrumb */}
-      {/* <Breadcrumb title="Collapsible Table" items={BCrumb} /> */}
-      {/* end breadcrumb */}
-      <ParentCard title="Leads Data">
+      <ParentCard title="Whitelisted IPs Data">
         <BlankCard>
           <TableContainer component={Paper}>
             <Table
@@ -54,29 +69,40 @@ const CollapsibleTable = ({ leads }) => {
                   </TableCell>
 
                   <TableCell colSpan={1}>
-                    <Typography variant="h6">Lead From</Typography>
+                    <Typography variant="h6">IP Address</Typography>
                   </TableCell>
                   <TableCell colSpan={1}>
-                    <Typography variant="h6">Client Name</Typography>
+                    <Typography variant="h6">Added On</Typography>
                   </TableCell>
 
-                  <TableCell colSpan={1}>
-                    <Typography variant="h6">Date</Typography>
-                  </TableCell>
                   <TableCell>
-                    <Typography variant="h6">Details</Typography>
+                    <Typography variant="h6">Actions</Typography>
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {(rowsPerPage > 0
-                  ? leads.slice(
+                  ? ips.data.slice(
                       page * rowsPerPage,
                       page * rowsPerPage + rowsPerPage
                     )
-                  : leads
-                ).map((lead) => (
-                  <CustomTableRow key={lead.id} lead={lead} />
+                  : whitelistedIps
+                ).map((ip) => (
+                  <TableRow key={ip.id}>
+                    <TableCell>{ip.id}</TableCell>
+                    <TableCell>{ip.ip_address}</TableCell>
+                    <TableCell>
+                      {new Date(ip.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="error"
+                        onClick={() => handleDeleteIp(ip.id)}
+                      >
+                        <IconTrash />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
               <TableFooter>
@@ -88,7 +114,7 @@ const CollapsibleTable = ({ leads }) => {
                       25,
                       { label: "All", value: -1 },
                     ]}
-                    count={leads.length}
+                    count={ips.count}
                     page={page}
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
@@ -104,4 +130,4 @@ const CollapsibleTable = ({ leads }) => {
   );
 };
 
-export default CollapsibleTable;
+export default WhitelistedIpsTable;

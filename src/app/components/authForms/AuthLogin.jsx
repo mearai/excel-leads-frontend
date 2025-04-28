@@ -4,14 +4,13 @@ import * as yup from "yup";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
 import CustomTextField from "@/app/components/forms/theme-elements/CustomTextField";
 import CustomFormLabel from "@/app/components/forms/theme-elements/CustomFormLabel";
 import { useAuth } from "@/hooks/auth";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setGlobalError } from "@/store/message/MessageSlice";
 import ButtonWithLoading from "../buttons/ButtonWithLoading";
+import { addMessage } from "@/store/message/MessageSlice";
 
 const AuthLogin = ({ title, subtitle, subtext }) => {
   const dispatch = useDispatch();
@@ -20,7 +19,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/dashboard",
+    redirectIfAuthenticated: "/",
   });
 
   // Define validation schema using Yup
@@ -50,11 +49,15 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
     },
   });
   useEffect(() => {
-    if (errors) {
-      console.log(errors);
-      dispatch(setGlobalError(errors?.message));
+    if (errors.message) {
+      dispatch(
+        addMessage({
+          type: "error",
+          text: errors?.message,
+        })
+      );
     }
-  }, [errors]);
+  }, [errors, dispatch]);
 
   return (
     <Box p={4}>
@@ -92,26 +95,21 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
               helperText={formik.touched.password && formik.errors.password}
             />
           </Box>
-          <Stack
-            justifyContent="space-between"
-            direction="row"
-            alignItems="center"
-            my={2}
-          >
-            <Typography
-              component={Link}
-              href="/auth/auth1/forgot-password"
-              fontWeight="500"
-              sx={{
-                textDecoration: "none",
-                color: "primary.main",
-              }}
-            >
-              Forgot Password ?
-            </Typography>
-          </Stack>
+          {errors.code && (
+            <>
+              <Typography color="error" mt={2}>
+                {errors.message}
+              </Typography>
+            </>
+          )}
         </Stack>
-        <ButtonWithLoading text={"Sign In"} loading={loading} />
+        <ButtonWithLoading
+          sx={{
+            marginTop: "20px",
+          }}
+          text={"Sign In"}
+          loading={loading}
+        />
         {subtitle}
       </form>
     </Box>

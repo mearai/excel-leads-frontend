@@ -46,7 +46,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       .post("/login", props)
       .then(() => {
         dispatch(fetchUser());
-        router.push("/dashboard");
+        router.push("/");
       })
       .catch((error) => {
         if (error.response.status !== 422) throw error;

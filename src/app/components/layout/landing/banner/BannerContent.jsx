@@ -7,18 +7,7 @@ import Typography from "@mui/material/Typography";
 const BannerContent = () => {
   return (
     <Box mt={8}>
-      <Typography
-        variant="h1"
-        fontWeight={900}
-        sx={{
-          fontSize: {
-            md: "54px",
-          },
-          lineHeight: {
-            md: "60px",
-          },
-        }}
-      >
+      <Typography variant="h1" fontWeight={900}>
         <Typography component={"span"} variant="inherit" color={"primary"}>
           Flow Digital
         </Typography>{" "}

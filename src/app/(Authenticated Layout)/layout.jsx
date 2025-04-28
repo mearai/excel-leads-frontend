@@ -5,5 +5,5 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  return <Main children={children} />;
+  return <Main>{children}</Main>;
 }

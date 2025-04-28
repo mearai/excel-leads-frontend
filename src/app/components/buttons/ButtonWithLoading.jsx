@@ -1,9 +1,9 @@
 import { Box, Button, CircularProgress } from "@mui/material";
 import React from "react";
 
-export default function ButtonWithLoading({ text, color, loading }) {
+export default function ButtonWithLoading({ text, color, loading, sx }) {
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative", ...sx }}>
       <Button
         color={color ? color : "primary"}
         variant="contained"

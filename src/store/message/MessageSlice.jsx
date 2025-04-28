@@ -1,31 +1,32 @@
-// messageSlice.js
-
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  error: '',
-  success: '',
+  messages: [], // ✅ Store multiple messages
 };
 
-const MessageSlice = createSlice({
-  name: 'message',
+const messageSlice = createSlice({
+  name: "message",
   initialState,
   reducers: {
-    setGlobalError(state, action) {
-      state.error = action.payload;
+    addMessage: (state, action) => {
+      const randomDigits = Math.floor(100 + Math.random() * 900);
+      const newMessage = {
+        id: `${Date.now()}${randomDigits}`,
+        ...action.payload,
+      };
+      state.messages.push(newMessage);
     },
-    clearError(state) {
-      state.error = null;
+    removeMessage: (state, action) => {
+      state.messages = state.messages.filter(
+        (msg) => msg.id !== action.payload
+      );
     },
-    setGlobalSuccess(state, action) {
-      state.success = action.payload;
-    },
-    clearSuccess(state) {
-      state.success = null;
+    clearMessages: (state) => {
+      state.messages = []; // ✅ Clear all messages
     },
   },
 });
 
-export const { setGlobalError, clearError, setGlobalSuccess, clearSuccess } = MessageSlice.actions;
-
-export default MessageSlice.reducer;
+export const { addMessage, removeMessage, clearMessages } =
+  messageSlice.actions;
+export default messageSlice.reducer;

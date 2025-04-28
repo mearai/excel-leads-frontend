@@ -4,17 +4,25 @@ import {
   Box,
   Button,
   Collapse,
+  Paper,
   Stack,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   Typography,
 } from "@mui/material";
 import ClipboardJS from "clipboard";
 import { useDispatch } from "react-redux";
-import { setGlobalError, setGlobalSuccess } from "@/store/message/MessageSlice";
-import axios from "@/lib/axios";
+import { addMessage } from "@/store/message/MessageSlice";
+import { fetchLeadById, markLeadAsRead } from "@/store/leads/LeadsSlice";
+import { useAuthContext } from "@/context/AuthContext";
+import ThemeDialog from "@/app/components/dialog/ThemeDialog";
+import { IconCopy } from "@tabler/icons-react";
+import { useGlobalDialog } from "@/context/DialogContext";
+import { fetchUserActivities } from "@/store/userActivities/userActivitiesSlice";
 
 const formatKey = (key) => {
   return key
@@ -34,18 +42,57 @@ const formatData = (data) => {
     })
     .join("\n"); // Use newline character to separate each line
 };
-
-const renderTableRows = (details, prefix = "") => {
-  return Object.entries(details).map(([key, value]) => {
+const renderTableRows = (data_to_show, prefix = "") => {
+  return Object.entries(data_to_show).map(([key, value]) => {
     const formattedKey = prefix
       ? `${prefix} - ${formatKey(key)}`
       : formatKey(key);
-    if (typeof value === "object" && !Array.isArray(value)) {
+    const typographyProps = { color: "textSecondary", fontWeight: "400" };
+
+    if (Array.isArray(value)) {
       return (
         <React.Fragment key={key}>
           <TableRow>
             <TableCell colSpan={2}>
-              <Typography color="textSecondary" fontWeight="700">
+              <Typography
+                textAlign="center"
+                fontWeight="700"
+                {...typographyProps}
+              >
+                {formattedKey}
+              </Typography>
+            </TableCell>
+          </TableRow>
+          {value.map((item, index) =>
+            typeof item === "object" ? (
+              renderTableRows(item)
+            ) : (
+              <TableRow key={`${key}-${index}`}>
+                <TableCell width="50%">
+                  <Typography {...typographyProps}>
+                    {formattedKey} [Item {index + 1}]
+                  </Typography>
+                </TableCell>
+                <TableCell width="50%">
+                  <Typography {...typographyProps}>{item}</Typography>
+                </TableCell>
+              </TableRow>
+            )
+          )}
+        </React.Fragment>
+      );
+    }
+
+    if (value && typeof value === "object") {
+      return (
+        <React.Fragment key={key}>
+          <TableRow>
+            <TableCell colSpan={2}>
+              <Typography
+                textAlign="center"
+                fontWeight="700"
+                {...typographyProps}
+              >
                 {formattedKey}
               </Typography>
             </TableCell>
@@ -53,61 +100,93 @@ const renderTableRows = (details, prefix = "") => {
           {renderTableRows(value, formattedKey)}
         </React.Fragment>
       );
-    } else {
-      return (
-        <TableRow key={key}>
-          <TableCell width={"50%"}>
-            <Typography color="textSecondary" fontWeight="400">
-              {formattedKey}
-            </Typography>
-          </TableCell>
-          <TableCell width={"50%"}>
-            <Typography color="textSecondary" fontWeight="400">
-              {Array.isArray(value) ? value.join(", ") : value}
-            </Typography>
-          </TableCell>
-        </TableRow>
-      );
     }
+
+    return (
+      <TableRow key={key}>
+        <TableCell width="50%">
+          <Typography {...typographyProps}>{formattedKey}</Typography>
+        </TableCell>
+        <TableCell width="50%">
+          <Typography {...typographyProps}>{value}</Typography>
+        </TableCell>
+      </TableRow>
+    );
   });
 };
 
-const CustomTableInnerRow = ({ details, open, id }) => {
+const CustomTableInnerRow = ({
+  data_to_copy,
+  data_to_show,
+  open,
+  id,
+  us_time,
+  is_read,
+  copied_by,
+  lead,
+}) => {
+  const { showDialog, closeDialog } = useGlobalDialog();
   const buttonRef = useRef(null);
   const tableRef = useRef(null);
   const dispatch = useDispatch();
-  if (!details || details.length === 0) {
-    return null;
-  }
+  const { hasRole } = useAuthContext();
+
+  const handleShowCopiedUsers = () => {
+    const copiedUsers = copied_by.map((activity) => ({
+      user_name: activity.user_name,
+      copied_at: activity.copied_at,
+    }));
+
+    const dialogContent = (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>User Name</TableCell>
+              <TableCell>Copied At</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {copiedUsers.map((user, index) => (
+              <TableRow key={index}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{user.user_name}</TableCell>
+                <TableCell>{user.copied_at}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+
+    showDialog({
+      title: "Users Who Copied This Lead",
+      description: dialogContent,
+      onClose: closeDialog(), // Add any callback for closing the dialog if needed
+    });
+  };
+  // Check permission
+  const isAdmin = hasRole("admin");
+
   useEffect(() => {
     if (!open) return;
-    const handleCopySuccess = async () => {
-      dispatch(setGlobalSuccess("Lead copied to clipboard!"));
 
-      // Mark the lead as read
-      try {
-        await axios.patch(`/api/v1/leads/${id}/read`);
-        console.log("Lead marked as read.");
-      } catch (error) {
-        console.error("Error marking lead as read: ", error);
-        dispatch(setGlobalError("Error marking lead as read"));
-      }
+    const handleCopySuccess = async () => {
+      dispatch(markLeadAsRead(id));
     };
-    console.log(details);
     const clipboard = new ClipboardJS(buttonRef.current, {
-      text: () => formatData(details),
+      text: () => formatData(data_to_copy),
     });
 
     clipboard.on("success", (e) => {
       e.clearSelection();
-
-      dispatch(setGlobalSuccess("Lead copied to clipboard!"));
       handleCopySuccess();
     });
 
     clipboard.on("error", (e) => {
       e.clearSelection();
-      dispatch(setGlobalError("Error copying to clipboard: "));
+
       console.error("Error copying to clipboard: ", e);
     });
 
@@ -115,6 +194,9 @@ const CustomTableInnerRow = ({ details, open, id }) => {
       clipboard.destroy();
     };
   }, [open]);
+  if (!data_to_show || data_to_show.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -151,16 +233,17 @@ const CustomTableInnerRow = ({ details, open, id }) => {
                   >
                     Lead No. {id}
                   </Typography>
+                  <Typography color="textSecondary" fontWeight="400">
+                    {us_time}
+                  </Typography>
                 </Stack>
                 <Stack
                   direction="row"
                   spacing={2}
                   justifyContent={"center"}
                   alignItems={"center"}
+                  marginTop={"10px"}
                 >
-                  <Typography variant="h4" fontWeight="600">
-                    Client Details
-                  </Typography>
                   <Button
                     sx={{
                       padding: "13px 48px",
@@ -172,32 +255,36 @@ const CustomTableInnerRow = ({ details, open, id }) => {
                     color="success"
                     ref={buttonRef}
                   >
-                    Copy Details
+                    <IconCopy />
+                    Copy Lead
                   </Button>
+
+                  {is_read && isAdmin && (
+                    <Button
+                      sx={{
+                        padding: "13px 48px",
+                        fontSize: "16px",
+                      }}
+                      spacing={2}
+                      variant="contained"
+                      color="primary"
+                      onClick={handleShowCopiedUsers}
+                    >
+                      Who Copied This Lead?
+                    </Button>
+                  )}
                 </Stack>
+                <Stack>{/* <ThemeDialog /> */}</Stack>
               </Typography>
-              <Table size="small" aria-label="details">
-                {/* <TableBody>
-                  {Object.entries(details).map(([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell width={"50%"}>
-                        <Typography color="textSecondary" fontWeight="400">
-                          {formatKey(key)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell width={"50%"}>
-                        <Typography color="textSecondary" fontWeight="400">
-                          {Array.isArray(value)
-                            ? value.join(", ")
-                            : typeof value === "object"
-                            ? JSON.stringify(value)
-                            : value}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody> */}
-                <TableBody>{renderTableRows(details)}</TableBody>
+              <Table
+                size="small"
+                aria-label="data_to_show"
+                style={{ filter: "blur(5px)", userSelect: "none" }}
+              >
+                <TableBody>
+                  {/* {renderTableRows(data_to_copy)}
+                  {renderTableRows(data_to_show)} */}
+                </TableBody>
               </Table>
             </Box>
           </Collapse>

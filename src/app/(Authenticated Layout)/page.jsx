@@ -1,35 +1,46 @@
 "use client";
 
-import PageContainer from "@/app/components/container/PageContainer";
-import CollapsibleTable from "./components/table/CollapsibleTable";
+import LeadsTable from "./components/table/LeadsTable";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLeads } from "@/store/leads/LeadsSlice";
 import { useEffect } from "react";
-import Loading from "../loading";
+import Loading from "@/app/loading";
+import { Box, Container, Typography } from "@mui/material";
 
-function page() {
+function Page() {
   const dispatch = useDispatch();
   const leads = useSelector((state) => state.leads);
+
   useEffect(() => {
-    console.log(leads.leads.length);
-    if (leads.leads.length === 0) {
-      console.log("leads");
-      console.log(leads.leads);
+    if (leads.count === 0) {
       dispatch(fetchLeads());
     }
   }, [dispatch]);
-  if (leads.leads.length === 0) {
+  if (leads.success == false) {
     return <Loading />;
   }
-  return (
-    <PageContainer title="Dashboard" description="Flow digital">
-      <>
-        <CollapsibleTable leads={leads.leads}></CollapsibleTable>
-        {/* <Leads leadscount={leadsCount}/>
-      
-      <YearlySales/> */}
-      </>
-    </PageContainer>
-  );
+  if (leads.count === 0) {
+    return (
+      <Container
+        sx={{
+          maxWidth: "lg",
+        }}
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          height="100vh"
+          textAlign="center"
+          justifyContent="center"
+        >
+          <Typography align="center" variant="h4" mb={4}>
+            No Leads assigned to you!
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  return <LeadsTable leads={leads.data}></LeadsTable>;
 }
-export default page;
+export default Page;
