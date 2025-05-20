@@ -25,7 +25,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   } = useSWR("/api/v1/user", fetcher, {
     revalidateOnFocus: true, // re-check when tab regains focus
     revalidateOnReconnect: true, // re-check after hibernate/wake
-    refreshInterval: 10000,
+    refreshInterval: 10 * 60 * 1000,
   });
 
   const csrf = () => axios.get("/sanctum/csrf-cookie");

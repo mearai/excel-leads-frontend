@@ -1,10 +1,10 @@
 import React from "react";
-import IpSettings from "./IpSettings";
+import CampaignsPage from "./campaignsPage";
 export const metadata = {
-  title: "Ip Settings",
+  title: "Campaigns",
 };
 const page = () => {
-  return <IpSettings />;
+  return <CampaignsPage />;
 };
 
 export default page;

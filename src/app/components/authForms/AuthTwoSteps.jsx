@@ -144,8 +144,8 @@ const AuthTwoSteps = () => {
         color="textSecondary"
         mb={1}
       >
-        We sent a verification code to your mobile. Enter the code from the
-        mobile in the field below.
+        We sent a verification code to your email. Enter the code from the email
+        in the field below.
       </Typography>
       <Typography
         variant="subtitle1"

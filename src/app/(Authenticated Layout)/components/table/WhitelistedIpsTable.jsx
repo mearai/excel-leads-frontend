@@ -23,9 +23,11 @@ import { addMessage } from "@/store/message/MessageSlice";
 import { useDispatch } from "react-redux";
 import Loading from "@/app/loading";
 import { deleteIp } from "@/store/ip/ipSlice";
+import { useGlobalDialog } from "@/context/DialogContext";
 
 const WhitelistedIpsTable = ({ ips }) => {
   const dispatch = useDispatch();
+  const { showDialog } = useGlobalDialog();
   // const [ips, setIps] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -45,7 +47,31 @@ const WhitelistedIpsTable = ({ ips }) => {
   };
 
   const handleDeleteIp = async (id) => {
-    dispatch(deleteIp(id));
+    showDialog({
+      type: "confirm",
+      title: "Delete IP",
+      description: "Are you sure you want to delete this IP?",
+      icon: "warning",
+      onConfirm: async () => {
+        try {
+          await dispatch(deleteIp(id));
+          showDialog({
+            type: "alert",
+            title: "Success",
+            description: "IP deleted successfully.",
+            icon: "success",
+          });
+        } catch (error) {
+          showDialog({
+            type: "alert",
+            title: "Error",
+            description: "Failed to delete IP. Please try again.",
+            icon: "error",
+          });
+        }
+      },
+      onCancel: () => {},
+    });
   };
 
   return (

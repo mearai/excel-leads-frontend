@@ -31,8 +31,8 @@ const Navigation = () => {
 
       {hasRole("seller") && (
         <>
-          <Typography component={Link} href="/stats" sx={linkStyles("/stats")}>
-            Stats
+          <Typography component={Link} href="/leads" sx={linkStyles("/leads")}>
+            Leads
           </Typography>
         </>
       )}
@@ -54,6 +54,13 @@ const Navigation = () => {
             sx={linkStyles("/user-activity")}
           >
             User Activity
+          </Typography>
+          <Typography
+            component={Link}
+            href="/campaigns"
+            sx={linkStyles("/campaigns")}
+          >
+            Campaigns
           </Typography>
         </>
       )}

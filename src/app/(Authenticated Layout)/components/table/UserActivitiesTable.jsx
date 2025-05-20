@@ -25,15 +25,16 @@ import { debounce } from "lodash";
 
 import { fetchUserActivities } from "@/store/userActivities/userActivitiesSlice";
 import Loading from "@/app/loading";
+import Link from "next/link";
 
 const columns = [
   { id: "id", label: "ID" },
   { id: "user_name", label: "User" },
+  { id: "activity_type", label: "Type" },
   { id: "lead", label: "Lead" },
   { id: "ip_address", label: "IP" },
-  { id: "activity_type", label: "Type" },
-  { id: "created_at_pkt", label: "Created (PKT)" },
-  { id: "created_at_chicago", label: "Created (CHI)" },
+  { id: "created_at_pkt", label: "Created at (PKT)" },
+  { id: "created_at_chicago", label: "Created at (CHI)" },
 ];
 const activityTypes = [
   { label: "All", value: "" },
@@ -67,11 +68,11 @@ const UserActivitiesTable = () => {
           " " +
           row.user_name +
           " " +
+          row.activity_type +
+          " " +
           row.lead?.name +
           " " +
           row.ip_address +
-          " " +
-          row.activity_type +
           " " +
           row.created_at_pkt +
           " " +
@@ -138,7 +139,12 @@ const UserActivitiesTable = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+  const linkStyles = (path) => ({
+    textDecoration: "underline",
+    color: "primary.main", // Active link color
+    fontWeight: 500,
+    margin: "0 12px", // Consistent spacing between items
+  });
   return (
     <Paper sx={{ padding: 2 }}>
       <Box
@@ -195,14 +201,25 @@ const UserActivitiesTable = () => {
                   <TableCell>{row.id}</TableCell>
                   <TableCell>{row.user_name}</TableCell>
                   <TableCell>
-                    {row.lead?.name ? `(${row.lead.id}) ${row.lead.name}` : "-"}
-                  </TableCell>
-                  <TableCell>{row.ip_address}</TableCell>
-                  <TableCell>
                     {activityTypes.find(
                       (type) => type.value === row.activity_type
                     )?.label || "-"}
                   </TableCell>
+                  <TableCell>
+                    {row.lead?.name ? (
+                      <Typography
+                        component={Link}
+                        href={`/leads/${row.lead.id}`}
+                        sx={linkStyles}
+                      >
+                        ({row.lead.id}) {row.lead.name}
+                      </Typography>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>{row.ip_address}</TableCell>
+
                   <TableCell>{row.created_at_pkt}</TableCell>
                   <TableCell>{row.created_at_chicago}</TableCell>
                 </TableRow>

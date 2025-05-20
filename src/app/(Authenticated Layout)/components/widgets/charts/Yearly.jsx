@@ -4,7 +4,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { useTheme } from "@mui/material/styles";
 
 import DashboardWidgetCard from "../../shared/DashboardWidgetCard";
-import SkeletonYearlySalesCard from "../skeletons/SkeletonYearlySalesCard";
+import SkeletonCharts from "../skeletons/SkeletonCharts";
 import { Box } from "@mui/material";
 
 const YearlySales = ({ data }) => {
@@ -100,7 +100,7 @@ const YearlySales = ({ data }) => {
   return (
     <>
       {isLoading ? (
-        <SkeletonYearlySalesCard />
+        <SkeletonCharts />
       ) : (
         <DashboardWidgetCard title="Last 12 Months Leads">
           <>

@@ -53,13 +53,22 @@ export const fetchIps = () => async (dispatch) => {
 export const createIp = (ipData) => async (dispatch) => {
   try {
     const response = await axios.post("/api/v1/whitelist", ipData);
-    dispatch(addIp(response.data.data));
-    dispatch(
-      addMessage({
-        type: "success",
-        text: "IP whitelisted successfully!",
-      })
-    );
+    if (response.data.success === true) {
+      dispatch(addIp(response.data.data));
+      dispatch(
+        addMessage({
+          type: "success",
+          text: "IP whitelisted successfully!",
+        })
+      );
+    } else {
+      dispatch(
+        addMessage({
+          type: "warning",
+          text: "Something went wrong!",
+        })
+      );
+    }
   } catch (error) {
     dispatch(
       addMessage({

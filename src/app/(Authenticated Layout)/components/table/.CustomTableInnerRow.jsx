@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Box,
   Button,
@@ -14,26 +14,47 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { formatData } from "./leadsHelper/helper";
+import ClipboardJS from "clipboard";
 import { useDispatch } from "react-redux";
-
+import { addMessage } from "@/store/message/MessageSlice";
 import { markLeadAsRead } from "@/store/leads/LeadsSlice";
 import { useAuthContext } from "@/context/AuthContext";
 
 import { IconCopy } from "@tabler/icons-react";
 import { useGlobalDialog } from "@/context/DialogContext";
 
+const formatKey = (key) => {
+  return key
+    .replace(/[_-]/g, " ") // Replace underscores and dashes with spaces
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
+};
+const formatData = (data) => {
+  return Object.entries(data)
+    .map(([key, value]) => {
+      return `${formatKey(key)}: ${
+        Array.isArray(value)
+          ? value.join(", ")
+          : typeof value === "object"
+          ? JSON.stringify(value)
+          : value
+      }`;
+    })
+    .join("\n"); // Use newline character to separate each line
+};
+
 const CustomTableInnerRow = ({
   data_to_copy,
   data_to_show,
   open,
   id,
-  time,
+  us_time,
   is_read,
   copied_by,
+  lead,
 }) => {
   const { showDialog, closeDialog } = useGlobalDialog();
   const buttonRef = useRef(null);
+  const tableRef = useRef(null);
   const dispatch = useDispatch();
   const { hasRole } = useAuthContext();
 
@@ -74,6 +95,32 @@ const CustomTableInnerRow = ({
   };
   // Check permission
   const isAdmin = hasRole("admin");
+
+  // useEffect(() => {
+  //   if (!open) return;
+
+  //   const handleCopySuccess = async () => {
+  //     dispatch(markLeadAsRead(id));
+  //   };
+  //   const clipboard = new ClipboardJS(buttonRef.current, {
+  //     text: () => formatData(data_to_copy),
+  //   });
+
+  //   clipboard.on("success", (e) => {
+  //     e.clearSelection();
+  //     handleCopySuccess();
+  //   });
+
+  //   clipboard.on("error", (e) => {
+  //     e.clearSelection();
+
+  //     console.error("Error copying to clipboard: ", e);
+  //   });
+
+  //   return () => {
+  //     clipboard.destroy();
+  //   };
+  // }, [open]);
   const handleCopy = async () => {
     try {
       // Call the API first
@@ -127,7 +174,7 @@ const CustomTableInnerRow = ({
                     Lead No. {id}
                   </Typography>
                   <Typography color="textSecondary" fontWeight="400">
-                    {time}
+                    {us_time}
                   </Typography>
                 </Stack>
                 <Stack

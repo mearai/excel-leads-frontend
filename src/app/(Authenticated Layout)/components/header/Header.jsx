@@ -83,7 +83,7 @@ const Header = () => {
           {/* ------------------------------------------- */}
           {/* End Ecommerce Dropdown */}
           {/* ------------------------------------------- */}
-          <Notifications />
+          {/* <Notifications /> */}
           <Profile />
         </Stack>
       </ToolbarStyled>

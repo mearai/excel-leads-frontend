@@ -27,6 +27,7 @@ import { useDispatch } from "react-redux";
 import { deleteLead } from "@/store/leads/LeadsSlice";
 import { useGlobalDialog } from "@/context/DialogContext";
 import { useAuthContext } from "@/context/AuthContext";
+import Link from "next/link";
 
 export default function CustomTableRow({ lead }) {
   const [open, setOpen] = useState(false);
@@ -125,17 +126,27 @@ export default function CustomTableRow({ lead }) {
       >
         <TableCell>
           <Typography color="textSecondary" variant="h6">
-            {lead.id}
+            <Link
+              href={`/leads/${lead.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              {lead.id}
+            </Link>
           </Typography>
         </TableCell>
         <TableCell colSpan={1}>
-          <Typography variant="h6" fontWeight="600">
-            {lead.lead_data.lead_from}
-          </Typography>
+          <Link
+            href={`/leads/${lead.id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Typography variant="h6" fontWeight="600">
+              {lead.lead_data.lead_from}
+            </Typography>
+          </Link>
         </TableCell>
         <TableCell colSpan={1}>
           <Typography color="textSecondary" variant="h6">
-            {lead.name}
+            {lead.lead_data.name}
           </Typography>
         </TableCell>
 
@@ -152,11 +163,11 @@ export default function CustomTableRow({ lead }) {
               onClick={() => setOpen(!open)}
             >
               {open ? (
-                <Tooltip title={"Details Open"}>
+                <Tooltip title={"Close Details "}>
                   <IconChevronUp />
                 </Tooltip>
               ) : (
-                <Tooltip title={"Details Close"}>
+                <Tooltip title={"Open Details "}>
                   <IconChevronDown />
                 </Tooltip>
               )}
@@ -193,7 +204,7 @@ export default function CustomTableRow({ lead }) {
       <CustomTableInnerRow
         data_to_show={lead.details}
         data_to_copy={lead.lead_data}
-        us_time={lead.time_chicago}
+        time={lead.time_pkt}
         is_read={lead.is_read}
         open={open}
         id={lead.id}

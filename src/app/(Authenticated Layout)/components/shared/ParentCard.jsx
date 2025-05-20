@@ -3,7 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import { Card, CardHeader, CardContent, Divider, Box } from "@mui/material";
 import { useSelector } from "react-redux";
 
-const ParentCard = ({ title, children, footer }) => {
+const ParentCard = ({ title, children, footer, sx }) => {
   const customizer = useSelector((state) => state.customizer);
 
   const theme = useTheme();
@@ -14,6 +14,7 @@ const ParentCard = ({ title, children, footer }) => {
       sx={{
         padding: 0,
         border: !customizer.isCardShadow ? `1px solid ${borderColor}` : "none",
+        ...sx,
       }}
       elevation={customizer.isCardShadow ? 9 : 0}
       variant={!customizer.isCardShadow ? "outlined" : undefined}

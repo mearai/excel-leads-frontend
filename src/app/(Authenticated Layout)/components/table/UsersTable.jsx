@@ -29,7 +29,7 @@ import RegisterAgent from "../forms/RegisterForm";
 
 const UsersTable = ({ users }) => {
   const dispatch = useDispatch();
-  const router = useRouter();
+
   const { showDialog, closeDialog } = useGlobalDialog();
 
   const [page, setPage] = useState(0);
@@ -45,7 +45,32 @@ const UsersTable = ({ users }) => {
   };
 
   const handleDeleteUser = (id) => {
-    dispatch(deleteUser(id)); // Dispatch Redux action to delete user
+    // Dispatch Redux action to delete user
+    showDialog({
+      type: "confirm",
+      title: "Delete User",
+      description: "Are you sure you want to delete this User?",
+      icon: "warning",
+      onConfirm: async () => {
+        try {
+          await dispatch(deleteUser(id));
+          showDialog({
+            type: "alert",
+            title: "Success",
+            description: "User deleted successfully.",
+            icon: "success",
+          });
+        } catch (error) {
+          showDialog({
+            type: "alert",
+            title: "Error",
+            description: "Failed to delete User. Please try again.",
+            icon: "error",
+          });
+        }
+      },
+      onCancel: () => {},
+    });
   };
 
   const handleAddAgent = async (values, resetForm) => {

@@ -5,8 +5,9 @@ import { Box, CardContent, Typography } from "@mui/material";
 import BlankCard from "../../shared/BlankCard";
 import { Stack } from "@mui/system";
 import Loading from "@/app/loading";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardWidgetCard from "../../shared/DashboardWidgetCard";
+import SkeletonCharts from "../skeletons/SkeletonCharts";
 // const Yaxis = (values) => {
 //   return values.map((value) => value.count);
 // };
@@ -16,14 +17,19 @@ import DashboardWidgetCard from "../../shared/DashboardWidgetCard";
 const Leads = ({ data }) => {
   // const leadsData = Yaxis(data);
   // const datesData = Xaxis(data);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (data) {
+      setIsLoading(false);
+    }
+  }, [data]);
 
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.main;
-  if (!data) {
-    return <Loading />;
-  }
+
   // chart
   const optionscolumnchart = {
     chart: {
@@ -75,7 +81,9 @@ const Leads = ({ data }) => {
     },
   ];
 
-  return (
+  return isLoading ? (
+    <SkeletonCharts />
+  ) : (
     <DashboardWidgetCard title="Last 15 Days Leads" subtitle="">
       <Box className="rounded-bars">
         <Chart

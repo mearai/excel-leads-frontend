@@ -11,6 +11,7 @@ import SellerReducer from "./seller/SellerSlice";
 import UsersReducer from "./users/UsersSlice";
 import IpsReducer from "./ip/ipSlice";
 import UserActivitiesReducer from "./userActivities/userActivitiesSlice";
+import CampaignsReducer from "./campaigns/campaignsSlice";
 // import EcommerceReducer from "./apps/eCommerce/ECommerceSlice";
 // import ChatsReducer from "./apps/chat/ChatSlice";
 // import NotesReducer from "./apps/notes/NotesSlice";
@@ -33,6 +34,7 @@ export const makeStore = () => {
       users: UsersReducer,
       ips: IpsReducer,
       userActivities: UserActivitiesReducer,
+      campaigns: CampaignsReducer,
       // ecommerceReducer: EcommerceReducer,
       // chatReducer: ChatsReducer,
       // emailReducer: EmailReducer,

@@ -35,7 +35,6 @@ export default function Main({ children }) {
   const { user } = useAuth({ middleware: "auth" });
 
   if (!user) {
-    console.log("main layout");
     return <Loading />;
   }
   // const can = (permission) => {
