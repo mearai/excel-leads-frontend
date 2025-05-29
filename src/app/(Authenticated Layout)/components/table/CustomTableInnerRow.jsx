@@ -23,15 +23,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { IconCopy } from "@tabler/icons-react";
 import { useGlobalDialog } from "@/context/DialogContext";
 
-const CustomTableInnerRow = ({
-  data_to_copy,
-  data_to_show,
-  open,
-  id,
-  time,
-  is_read,
-  copied_by,
-}) => {
+const CustomTableInnerRow = ({ open, id, time, is_read, copied_by }) => {
   const { showDialog, closeDialog } = useGlobalDialog();
   const buttonRef = useRef(null);
   const dispatch = useDispatch();
@@ -76,20 +68,15 @@ const CustomTableInnerRow = ({
   const isAdmin = hasRole("admin");
   const handleCopy = async () => {
     try {
-      // Call the API first
-      await dispatch(markLeadAsRead(id)); // unwrap if using RTK
+      // Get the full lead object
+      const fullLead = await dispatch(markLeadAsRead(id));
+      await navigator.clipboard.writeText(formatData(fullLead.lead_data));
 
-      // Then copy to clipboard
-      await navigator.clipboard.writeText(formatData(data_to_copy));
       console.log("Lead copied to clipboard!");
     } catch (error) {
       console.error("Failed to mark as read or copy:", error);
     }
   };
-
-  if (!data_to_show || data_to_show.length === 0) {
-    return null;
-  }
 
   return (
     <>

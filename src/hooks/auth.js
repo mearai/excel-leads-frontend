@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import axios from "@/lib/axios";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -172,7 +172,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       .then((response) => setStatus(response.data.status));
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     if (!error) {
       await axios.post("/logout").then(() => mutate());
 
@@ -181,7 +181,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
 
     window.location.pathname = "/login";
-  };
+  }, [error, dispatch, mutate]);
 
   useEffect(() => {
     if (
@@ -230,7 +230,16 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       console.log(user);
       dispatch(setCurrentUser(user));
     }
-  }, [user, error]);
+  }, [
+    user,
+    error,
+    dispatch,
+    logout,
+    currentUser,
+    middleware,
+    redirectIfAuthenticated,
+    router,
+  ]);
 
   return {
     user,

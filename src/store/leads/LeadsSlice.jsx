@@ -110,7 +110,8 @@ export const fetchLeadById = (leadId) => async (dispatch) => {
   try {
     const response = await axios.get(`/api/v1/leads/${leadId}`);
     if (response.data.success) {
-      dispatch(updateLead({ id: leadId, data: response.data }));
+      // dispatch(updateLead({ id: leadId, data: response.data }));
+      return response.data.data; // ✅ Return full lead object
     }
   } catch (error) {
     dispatch(
@@ -119,6 +120,7 @@ export const fetchLeadById = (leadId) => async (dispatch) => {
         text: error.response?.data?.message || "Error fetching lead",
       })
     );
+    throw error; // Optional: rethrow for caller to handle
   }
 };
 
@@ -126,14 +128,21 @@ export const fetchLeadById = (leadId) => async (dispatch) => {
 export const markLeadAsRead = (leadId) => async (dispatch) => {
   try {
     const response = await axios.patch(`/api/v1/leads/${leadId}/read`);
+
     if (response.data.success) {
-      dispatch(updateLead({ id: leadId, data: response.data.data }));
+      const fullLeadData = response.data.data;
+
+      // Update Redux state with full lead object
+      dispatch(updateLead({ id: leadId, data: fullLeadData }));
+
       dispatch(
         addMessage({
           type: "success",
           text: "Lead copied to clipboard!",
         })
       );
+
+      return fullLeadData; // 👈 return the entire lead data object
     }
   } catch (error) {
     dispatch(
@@ -142,6 +151,7 @@ export const markLeadAsRead = (leadId) => async (dispatch) => {
         text: error.response?.data?.message || "Error marking lead as read",
       })
     );
+    throw error;
   }
 };
 

@@ -20,10 +20,10 @@ const ThemeDialog = () => {
 
   // Check permission
   const hasPermission = hasRole("seller");
+  const [open, setOpen] = React.useState(false);
   if (!hasPermission) {
     return;
   }
-  const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
