@@ -15,53 +15,46 @@ const Navigation = () => {
     color: pathname === path ? "primary.main" : "text.secondary", // Active link color
     fontWeight: 500,
     margin: "0 12px", // Consistent spacing between items
+    cursor: "pointer",
   });
 
   return (
     <>
-      <Button
-        color="inherit"
-        sx={{ color: pathname === "/" ? "primary.main" : "text.secondary" }}
-        variant="text"
-        href="/"
-        component={Link}
-      >
-        Home
-      </Button>
+      <Link href="/" prefetch={false}>
+        <Button
+          color="inherit"
+          sx={{ color: pathname === "/" ? "primary.main" : "text.secondary" }}
+          variant="text"
+        >
+          Home
+        </Button>
+      </Link>
 
       {hasRole("seller") && (
-        <>
-          <Typography component={Link} href="/leads" sx={linkStyles("/leads")}>
-            Leads
-          </Typography>
-        </>
+        <Link href="/leads" prefetch={false}>
+          <Typography sx={linkStyles("/leads")}>Leads</Typography>
+        </Link>
       )}
+
       {hasRole("admin") && (
         <>
-          <Typography
-            component={Link}
-            href="/ip-settings"
-            sx={linkStyles("/ip-settings")}
-          >
-            IP Settings
-          </Typography>
-          <Typography component={Link} href="/users" sx={linkStyles("/users")}>
-            Users
-          </Typography>
-          <Typography
-            component={Link}
-            href="/user-activity"
-            sx={linkStyles("/user-activity")}
-          >
-            User Activity
-          </Typography>
-          <Typography
-            component={Link}
-            href="/campaigns"
-            sx={linkStyles("/campaigns")}
-          >
-            Campaigns
-          </Typography>
+          <Link href="/ip-settings" prefetch={false}>
+            <Typography sx={linkStyles("/ip-settings")}>IP Settings</Typography>
+          </Link>
+
+          <Link href="/users" prefetch={false}>
+            <Typography sx={linkStyles("/users")}>Users</Typography>
+          </Link>
+
+          <Link href="/user-activity" prefetch={false}>
+            <Typography sx={linkStyles("/user-activity")}>
+              User Activity
+            </Typography>
+          </Link>
+
+          <Link href="/campaigns" prefetch={false}>
+            <Typography sx={linkStyles("/campaigns")}>Campaigns</Typography>
+          </Link>
         </>
       )}
     </>

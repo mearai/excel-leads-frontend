@@ -4,24 +4,42 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import { Box, Container, Typography, Paper, Grid } from "@mui/material";
 import Loading from "@/app/loading";
-import { useEffect } from "react";
-import { fetchLeads } from "@/store/leads/LeadsSlice";
+import { useEffect, useState } from "react";
+import { fetchLeadById } from "@/store/leads/LeadsSlice";
 import withRole from "@/hoc/withRole";
 import BlankCard from "../../components/shared/BlankCard";
 import ParentCard from "../../components/shared/ParentCard";
 
 function LeadDetailsPage() {
-  const dispatch = useDispatch();
   const { id } = useParams();
-  const leads = useSelector((state) => state.leads);
-  useEffect(() => {
-    if (leads.count === 0) {
-      dispatch(fetchLeads());
-    }
-  }, [dispatch]);
-  if (leads.success === false) return <Loading />;
+  const dispatch = useDispatch();
 
-  const lead = leads.data?.find((l) => l.id === parseInt(id));
+  const [lead, setLead] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadLead = async () => {
+      try {
+        const leadData = await dispatch(fetchLeadById(id)); // no unwrap needed
+        setLead(leadData);
+      } catch (error) {
+        console.error("Failed to fetch lead:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadLead();
+  }, [id, dispatch]);
+  if (loading) {
+    return (
+      <Container maxWidth="md">
+        <Box textAlign="center" mt={10}>
+          <Loading />
+        </Box>
+      </Container>
+    );
+  }
   console.log(lead);
   if (!lead) {
     return (

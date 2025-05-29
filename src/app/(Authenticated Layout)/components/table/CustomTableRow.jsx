@@ -32,13 +32,15 @@ import Link from "next/link";
 export default function CustomTableRow({ lead }) {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+  const { hasRole } = useAuthContext();
+  const isAdmin = hasRole("admin");
+  const { showDialog } = useGlobalDialog();
   if (!lead) {
     return;
   }
-  const { hasRole } = useAuthContext();
-  const isAdmin = hasRole("admin");
+
   const isHidden = lead.is_hidden;
-  const { showDialog } = useGlobalDialog();
+
   const rowColor = lead.is_hidden
     ? "#bd3235" // Red for hidden
     : lead.is_read
@@ -140,13 +142,13 @@ export default function CustomTableRow({ lead }) {
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <Typography variant="h6" fontWeight="600">
-              {lead.lead_data.lead_from}
+              {lead.lead_from}
             </Typography>
           </Link>
         </TableCell>
         <TableCell colSpan={1}>
           <Typography color="textSecondary" variant="h6">
-            {lead.lead_data.name}
+            {lead.name}
           </Typography>
         </TableCell>
 
@@ -202,14 +204,11 @@ export default function CustomTableRow({ lead }) {
         </TableCell>
       </TableRow>
       <CustomTableInnerRow
-        data_to_show={lead.details}
-        data_to_copy={lead.lead_data}
         time={lead.time_pkt}
         is_read={lead.is_read}
         open={open}
         id={lead.id}
         copied_by={lead.copied_by}
-        lead={lead}
       />
     </>
   );

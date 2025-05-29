@@ -25,9 +25,9 @@ function LeadsPage() {
     if (campaign) {
       dispatch(setFilters({ campaign: parseInt(campaign.toString()) }));
     } else {
-      dispatch(setFilters({ campaign: "all" })); // 👈 Reset to show all leads
+      dispatch(setFilters({ campaign: "all" }));
     }
-  }, [campaign]);
+  }, [campaign, dispatch]);
   if (success == false) {
     return <Loading />;
   }

@@ -43,10 +43,7 @@ const AuthTwoSteps = () => {
     middleware: "guest",
     redirectIfAuthenticated: "/",
   });
-  if (!email) {
-    console.log(email);
-    return <Loading />;
-  }
+
   const dispatch = useDispatch();
   const inputRefs = useRef([]);
   const formik = useFormik({
@@ -70,7 +67,28 @@ const AuthTwoSteps = () => {
       });
     },
   });
-
+  useEffect(() => {
+    if (errors.message) {
+      dispatch(
+        addMessage({
+          type: "error",
+          text: errors?.message,
+        })
+      );
+    }
+    if (message) {
+      dispatch(
+        addMessage({
+          type: "success",
+          text: message,
+        })
+      );
+    }
+  }, [errors, message, dispatch]);
+  if (!email) {
+    console.log(email);
+    return <Loading />;
+  }
   const handleOnChange = (e, i) => {
     const { name, value } = e.target;
     let currentVal = value;
@@ -111,24 +129,6 @@ const AuthTwoSteps = () => {
     }
     formik.setValues(updatedValues);
   };
-  useEffect(() => {
-    if (errors.message) {
-      dispatch(
-        addMessage({
-          type: "error",
-          text: errors?.message,
-        })
-      );
-    }
-    if (message) {
-      dispatch(
-        addMessage({
-          type: "success",
-          text: message,
-        })
-      );
-    }
-  }, [errors, message, dispatch]);
 
   return (
     <Card

@@ -12,12 +12,12 @@ import { createIp, fetchIps } from "@/store/ip/ipSlice";
 const IpSettings = () => {
   const dispatch = useDispatch();
   const ips = useSelector((state) => state.ips);
+  const count = useSelector((state) => state.ips.count);
   useEffect(() => {
-    if (ips.count === 0) {
+    if (count === 0) {
       dispatch(fetchIps());
-      console.log(ips);
     }
-  }, [ips.count, dispatch]);
+  }, [count, dispatch]);
 
   return (
     <Grid container justifyContent={"center"} spacing={3} paddingTop={"40px"}>

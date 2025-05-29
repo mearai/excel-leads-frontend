@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -11,6 +10,7 @@ import { IconMail } from "@tabler/icons-react";
 import { Stack } from "@mui/system";
 import { useSelector } from "react-redux";
 import { useAuth } from "@/hooks/auth";
+import Image from "next/image";
 
 const Profile = () => {
   const { logout } = useAuth();
@@ -38,13 +38,12 @@ const Profile = () => {
         }}
         onClick={handleClick2}
       >
-        <Avatar
-          src={"/images/profile/user-1.jpg"}
-          alt={currentUser?.name}
-          sx={{
-            width: 35,
-            height: 35,
-          }}
+        <Image
+          src="/images/user.png"
+          alt="logo"
+          height={35}
+          width={35}
+          priority
         />
       </IconButton>
       {/* ------------------------------------------- */}
@@ -67,10 +66,12 @@ const Profile = () => {
       >
         <Typography variant="h5">User Profile</Typography>
         <Stack direction="row" py={3} spacing={2} alignItems="center">
-          <Avatar
-            src={"/images/profile/user-1.jpg"}
-            alt={currentUser?.name}
-            sx={{ width: 95, height: 95 }}
+          <Image
+            src="/images/user.png"
+            alt="logo"
+            height={35}
+            width={35}
+            priority
           />
           <Box>
             <Typography

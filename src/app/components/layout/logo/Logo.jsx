@@ -14,7 +14,7 @@ const Logo = () => {
   }));
 
   return (
-    <LinkStyled href="/">
+    <LinkStyled href="/" prefetch={false}>
       {customizer.activeMode === "dark" ? (
         <Image
           src="/images/logos/flow-logo-dark.svg"

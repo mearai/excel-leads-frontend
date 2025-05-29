@@ -12,7 +12,7 @@ const withRole = (Component, requiredRole) => {
       if (!hasRole(requiredRole)) {
         router.replace("/"); // Redirect unauthorized users
       }
-    }, [requiredRole, router]);
+    }, [router, hasRole]);
 
     if (!hasRole(requiredRole)) return null; // Prevent rendering until redirected
 
